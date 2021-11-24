@@ -1,4 +1,6 @@
-# faces-for-autism
+# FACES for Autism Resource Repository
+
+A web page that allows users to easily search, explore, and obtain useful information from the FACES repository.
 
 ## Project setup
 ```
