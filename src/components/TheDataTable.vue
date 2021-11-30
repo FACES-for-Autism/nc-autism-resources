@@ -1,5 +1,5 @@
 <template>
-<table>
+<table class="block w-full overflow-x-scroll">
   <tr>
     <th
       v-for="header in Object.keys(allRepoData[0])" :key="header"

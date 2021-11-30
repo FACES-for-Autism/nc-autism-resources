@@ -26,12 +26,13 @@ const appRepoData = ref({})
 
 // Pass the CSV data into the reactive data store
 onBeforeMount(() => {
-  // Remove leading/trailing whitespace in column headers and add an id key to each entry in the dataset
+  // Remove leading/trailing whitespace in string data and add an id key to each entry in the dataset
   const cleanRepoData = rawRepoData.map((resource, i) => {
     const cleanResource = {}
-    // Some column headers may have leading or trailing whitespace, trim these
+    // Some string values may have leading or trailing whitespace, trim these
     Object.entries(resource).forEach(d => {
-      cleanResource[d[0].trim()] = d[1]
+      cleanResource[d[0].trim()] = typeof(d[1]) === 'string'
+        ? d[1].trim() : d[1]
     })
     // Add id parameter to each resource object
     cleanResource.id = i
@@ -47,5 +48,6 @@ onBeforeMount(() => {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   max-width: 1280px;
+  margin: auto;
 }
 </style>
