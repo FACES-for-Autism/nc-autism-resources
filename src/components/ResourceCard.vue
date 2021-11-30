@@ -1,24 +1,27 @@
 <template>
-  <h3>{{ resource.Name }}</h3>
-  <a
-    v-if="valueIsDefined(resource['Web Address'])"
-    :href="resource['Web Address']"
-  >Visit website</a>
-  <p>
-    <a
-      v-if="valueIsDefined(resource['Email Address'])"
-      :href="'mailto:' + resource['Email Address']"
-    >{{ resource['Email Address'] }}</a>
-    <br v-if="valueIsDefined(resource['Email Address'])">
-    <a
-      v-if="valueIsDefined(resource['Phone Number'])"
-      :href="'tel:+1-' + resource['Phone Number']"
-    >{{  resource['Phone Number'] }}</a>
-  </p>
-  <address v-if="valueIsDefined(resource['Physical Address'])">
-    {{ resource['Physical Address'] }}
-  </address>
-  
+  <div class="grid">
+    <h3 class="inline mr-2">{{ resource.Name }}</h3>
+    <p class="inline">
+      (<a
+        v-if="valueIsDefined(resource['Web Address'])"
+        :href="resource['Web Address']"
+      >Visit website</a>)
+    </p>
+    <p>
+      <a
+        v-if="valueIsDefined(resource['Email Address'])"
+        :href="'mailto:' + resource['Email Address']"
+      >{{ resource['Email Address'] }}</a>
+      <br v-if="valueIsDefined(resource['Email Address'])">
+      <a
+        v-if="valueIsDefined(resource['Phone Number'])"
+        :href="'tel:+1-' + resource['Phone Number']"
+      >{{  resource['Phone Number'] }}</a>
+    </p>
+    <address v-if="valueIsDefined(resource['Physical Address'])">
+      {{ resource['Physical Address'] }}
+    </address>
+  </div>
 </template>
 
 <script setup>

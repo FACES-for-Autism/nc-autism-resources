@@ -1,11 +1,13 @@
 <template>
   <h1>FACES Resources Repository</h1>
   <h2>Search results</h2>
-  <ResourceCard
-    v-for="resource in appRepoData"
-    :key="resource.id"
-    :resource="resource"
-  />
+  <div class="grid sm:grid-cols-1 md:grid-cols-2 place-items-center">
+    <ResourceCard
+      v-for="resource in appRepoData"
+      :key="resource.id"
+      :resource="resource"
+    />
+  </div>
   <h2>Full data table</h2>
   <TheDataTable :allRepoData="appRepoData" />
 </template>
@@ -44,5 +46,6 @@ onBeforeMount(() => {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 1280px;
 }
 </style>

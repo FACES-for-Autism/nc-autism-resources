@@ -1,4 +1,5 @@
 module.exports = {
+  // Setup for loading local CSV files
   chainWebpack: config => {
     config.module
       .rule('csv')
