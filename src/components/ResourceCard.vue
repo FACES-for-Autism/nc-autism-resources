@@ -1,20 +1,42 @@
 <template>
   <h3>{{ resource.Name }}</h3>
-  <p><a :href="resource['Web Address']">{{ resource['Web Address'] }}</a></p>
-  <p>{{ resource['Physical Address'] }}</p>
-  <p><a :href="'mailto:' + resource['Email Address']">{{ resource['Email Address'] }}</a></p>
-  <p><a :href="'tel:+1-' + resource['Phone Number']">{{  resource['Phone Number'] }}</a></p>
+  <a
+    v-if="valueIsDefined(resource['Web Address'])"
+    :href="resource['Web Address']"
+  >Visit website</a>
+  <p>
+    <a
+      v-if="valueIsDefined(resource['Email Address'])"
+      :href="'mailto:' + resource['Email Address']"
+    >{{ resource['Email Address'] }}</a>
+    <br v-if="valueIsDefined(resource['Email Address'])">
+    <a
+      v-if="valueIsDefined(resource['Phone Number'])"
+      :href="'tel:+1-' + resource['Phone Number']"
+    >{{  resource['Phone Number'] }}</a>
+  </p>
+  <address v-if="valueIsDefined(resource['Physical Address'])">
+    {{ resource['Physical Address'] }}
+  </address>
+  
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-
+/* global defineProps */
 defineProps({
   resource: {
     type: Object,
     required: true
   }
 })
+
+// Test if there is a defined value in the resource field, used to conditionally render (v-if) resource information only if there is a value. This prevents empty HTML tags.
+const valueIsDefined = (value) => {
+  if (value != null && value.length > 0) {
+    return true
+  }
+  return false
+}
 </script>
 
 <style scoped>

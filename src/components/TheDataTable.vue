@@ -16,9 +16,8 @@
 </template>
 
 <script setup>
+/* global defineProps */
 // A table to display all the data loaded into the application (just for testing?)
-
-import { defineProps } from 'vue'
 
 defineProps({
   // All of the data loaded into the application
