@@ -1,17 +1,42 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1>FACES Resources Repository</h1>
+  <h2>Search results</h2>
+  <ResourceCard
+    v-for="resource in appRepoData"
+    :key="resource.id"
+    :resource="resource"
+  />
+  <h2>Full data table</h2>
+  <TheDataTable :allRepoData="appRepoData" />
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script setup>
+import { ref, onBeforeMount } from 'vue'
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+import TheDataTable from './components/TheDataTable.vue'
+import ResourceCard from './components/ResourceCard.vue'
+
+// Import the data source (currently a locally stored test CSV file)
+import rawRepoData from './assets/data/sample-repo-Duplin.csv'
+
+// Create reactive data to contain data from CSV file
+const appRepoData = ref({})
+
+// Pass the CSV data into the reactive data store
+onBeforeMount(() => {
+  // Remove leading/trailing whitespace in column headers and add an id key to each entry in the dataset
+  const cleanRepoData = rawRepoData.map((resource, i) => {
+    const cleanResource = {}
+    // Some column headers may have leading or trailing whitespace, trim these
+    Object.entries(resource).forEach(d => {
+      cleanResource[d[0].trim()] = d[1]
+    })
+    // Add id parameter to each resource object
+    cleanResource.id = i
+    return cleanResource
+  });
+  appRepoData.value = cleanRepoData
+})
 </script>
 
 <style>
@@ -19,8 +44,5 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
