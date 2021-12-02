@@ -6,9 +6,13 @@ The [FACES (Fostering Advocacy, Communication, Empowerment, and Support) program
 
 ## Components
 
+### ResourceCard.vue
+
+This component provides a view of the field data for a resource.
+
 ### TheDataTable.vue
 
-This component provides a simple table view of the data loaded into the application.
+This component provides a simple table view of the data loaded into the application. Currently this component is only relevant for testing purposes.
 
 ## Project setup
 

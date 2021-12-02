@@ -1,14 +1,18 @@
 <template>
-<table class="block w-full overflow-x-scroll">
-  <tr>
-    <th
-      v-for="header in Object.keys(allRepoData[0])" :key="header"
-    >{{ header }}</th>
-  </tr>
+<table class="block w-full table-fixed overflow-x-scroll border-collapse">
+  <thead class="sticky">
+    <tr>
+      <th
+        class="border-2 border-gray-600"
+        v-for="header in Object.keys(allRepoData[0])" :key="header"
+      >{{ header }}</th>
+    </tr>
+  </thead>
   <tr
     v-for="resource in allRepoData" :key="resource.id"
   >
     <td
+      class="border-2 border-gray-600"
       v-for="(resourceData, j) in resource" :key="j"
     >{{ resourceData }}</td>
   </tr>

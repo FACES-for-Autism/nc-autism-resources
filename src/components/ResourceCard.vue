@@ -1,13 +1,15 @@
 <template>
-  <div class="grid">
-    <h3 class="inline mr-2">{{ resource.Name }}</h3>
-    <p class="inline">
-      (<a
-        v-if="valueIsDefined(resource['Web Address'])"
-        :href="resource['Web Address']"
-      >Visit website</a>)
-    </p>
-    <p>
+  <div class="flex flex-col p-4 border-2 border-gray-600 rounded-md">
+    <div class="block">
+      <h3 class="inline">{{ resource.Name }}</h3>
+      <p class="inline">
+        (<a
+          v-if="valueIsDefined(resource['Web Address'])"
+          :href="resource['Web Address']"
+        >Visit website</a>)
+      </p>
+    </div>
+    <p class="">
       <a
         v-if="valueIsDefined(resource['Email Address'])"
         :href="'mailto:' + resource['Email Address']"
@@ -18,9 +20,19 @@
         :href="'tel:+1-' + resource['Phone Number']"
       >{{  resource['Phone Number'] }}</a>
     </p>
-    <address v-if="valueIsDefined(resource['Physical Address'])">
-      {{ resource['Physical Address'] }}
-    </address>
+    <div class="block">
+      <address
+        class="inline"
+        v-if="valueIsDefined(resource['Physical Address'])"
+      >{{ resource['Physical Address'] }}
+      </address>
+      <p class="inline">
+        (<a
+          v-if="valueIsDefined(resource['Physical Address'])"
+          href="#"
+        >Open in map</a>)
+      </p>
+    </div>
   </div>
 </template>
 
