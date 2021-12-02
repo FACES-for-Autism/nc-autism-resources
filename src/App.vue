@@ -1,19 +1,28 @@
 <template>
-  <h1>FACES Resources Repository</h1>
-  <h2>Resource listing</h2>
-  <SearchForm
-    v-model:county="state.fieldFilters.county"
-  />
-  <p>{{ filterText }}</p>
-  <div class="grid sm:grid-cols-1 sm:gap-2 md:grid-cols-2 md:gap-4 place-items-stretch">
-    <ResourceCard
-      v-for="resource in state.filteredRepoData"
-      :key="resource.id"
-      :resource="resource"
-    />
+  <div class="mx-4 md:mx-6 xl:mx-auto max-w-6xl">
+    <header class="flex flex-row content-center">
+      <a href="https://sites.google.com/ncsu.edu/facesprogram/home">FACES logo link</a>
+      <h1>FACES Resources Repository</h1>
+    </header>
+    <main>
+      <h2>Resource listing</h2>
+      <SearchForm
+        v-model:county="state.fieldFilters.county"
+      />
+      <p>{{ filterText }}</p>
+      <div class="grid sm:grid-cols-1 sm:gap-2 md:grid-cols-2 md:gap-4 place-items-stretch">
+        <ResourceCard
+          v-for="resource in state.filteredRepoData"
+          :key="resource.id"
+          :resource="resource"
+        />
+      </div>
+    </main>
+    <footer>
+      <h2>Full data table (for testing)</h2>
+      <TheDataTable :allRepoData="state.fullRepoData" />
+    </footer>
   </div>
-  <h2>Full data table (for testing)</h2>
-  <TheDataTable :allRepoData="state.fullRepoData" />
 </template>
 
 <script setup>
