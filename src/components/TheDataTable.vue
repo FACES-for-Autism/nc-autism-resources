@@ -1,35 +1,45 @@
 <template>
-<table class="block w-full table-fixed overflow-x-scroll border-collapse">
-  <thead class="sticky">
-    <tr>
-      <th
+  <table class="block w-full table-fixed overflow-x-scroll border-collapse">
+    <thead class="sticky">
+      <tr>
+        <th
+          v-for="header in Object.keys(allRepoData[0])" :key="header"
+          class="border-2 border-gray-600"
+        >{{ header }}</th>
+      </tr>
+    </thead>
+    <tr
+      v-for="resource in allRepoData" :key="resource.id"
+      :class="highlighted(resource.id)"
+    >
+      <td
+        v-for="(resourceData, i) in resource" :key="i"
         class="border-2 border-gray-600"
-        v-for="header in Object.keys(allRepoData[0])" :key="header"
-      >{{ header }}</th>
+      >{{ resourceData }}</td>
     </tr>
-  </thead>
-  <tr
-    v-for="resource in allRepoData" :key="resource.id"
-  >
-    <td
-      class="border-2 border-gray-600"
-      v-for="(resourceData, j) in resource" :key="j"
-    >{{ resourceData }}</td>
-  </tr>
-</table>
+  </table>
 </template>
 
 <script setup>
 /* global defineProps */
 // A table to display all the data loaded into the application (just for testing?)
+// import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   // All of the data loaded into the application
   allRepoData: {
       type: Array,
       required: true
-    }
+    },
+  filteredRepoDataIDs: {
+    type: Array
+  }
 })
+
+const highlighted = (a) => {
+  console.log(a)
+  return props.filteredRepoDataIDs.includes(a) ? 'bg-purple-200' : ''
+}
 </script>
 
 <style scoped>
