@@ -7,22 +7,46 @@
       <h1 class="ml-4 font-bold">FACES Resources Repository</h1>
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </header>
-    <aside class="col-span-12 md:col-span-3 md:h-screen">
+    <aside class="col-span-12 md:col-span-3 md:h-screen sticky top-0 bg-white">
       <FilterUI
-        v-model:countyFilter="state.fieldFilters.county"
         v-model:ageGroupFilter="state.fieldFilters.ageGroup"
         :uniqueAgeGroups="state.uniqueAgeGroups"
       />
     </aside>
-    <main class="col-span-12 md:col-start-4 md:col-span-9">
-      <h2>Resource listing</h2>
-      <p>{{ filterText }}</p>
+    <main class="col-span-12 md:col-start-4 md:col-span-9 ">
+      <div id="resource-list" class="flex flex-row flex-wrap items-baseline sticky top-0 bg-white">
+        <h2 class="font-bold">Resource listing</h2>
+        <label class="ml-auto mr-2" for="county">Jump to a specific county:</label>
+        <select
+          class="w-min border-2 border-gray-500 rounded-sm"
+          @change="goToCountyListing"
+          name="county_filter"
+          id="county"
+        >
+          <option selected disabled value="">Select a county</option>
+          <option
+            v-for="county in state.uniqueCounties"
+            :key="county"
+            :value="county"
+          >
+            {{ county }}
+          </option>
+        </select>
+        <p class="w-full">{{ filterText }}</p>
+      </div>
       <div class="flex flex-col">
         <template
           v-for="county in state.uniqueCounties.sort()"
           :key="county"
         >
-          <h3 :id="county"><a :href="'#' + county">{{ county }}</a></h3>
+          <h3 :id="county" class="text-gray-900 font-semibold">
+            <!-- <a
+              :href="'#' + county"
+              class="text-gray-900 font-semibold no-underline"
+            > -->
+              {{county}}
+            <!-- </a> -->
+          </h3>
           <ResourceCard
             v-for="resource in filterByCounty(county)"
             :key="resource.id"
@@ -31,7 +55,7 @@
         </template>
       </div>
     </main>
-    <footer class="col-span-12">
+    <footer class="col-start-4 col-span-9">
       <h2>Full data table (for testing)</h2>
       <TheDataTable
         :allRepoData="state.fullRepoData"
@@ -60,7 +84,6 @@ const state = reactive({
   filteredRepoData: {},
   // The field values used to filter the dataset
   fieldFilters: {
-    'county': '',
     'ageGroup': '',
     'services': []
   },
@@ -96,42 +119,39 @@ onBeforeMount(() => {
   ]
 })
 
+// Jump to the selected county anchor
+const goToCountyListing = (e) => {
+  const yOffset = document.querySelector('header')
+    .getBoundingClientRect().height
+  const scrollToElement = document.getElementById(e.target.value)
+  window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - yOffset - 8)
+}
+
 // Compose the text describing the current set filters
 const filterText = computed(() => {
   // If no filters are set return boilerplate text
   if (Object.values(state.fieldFilters).every(d => d.length === 0)) {
-    return 'Showing resources for all counties'
+    return 'No filters set'
   }
-  const {county, ageGroup, services} = state.fieldFilters
+  const {ageGroup, services} = state.fieldFilters
 
-  return 'Showing resources for '
-    + `${county.length === 0 ? 'all counties' : `${county} County`}`
-    + `${ageGroup.length === 0 ? '' : ', ' + `${ageGroup} age range`}`
-    + `${services.length === 0 ? '' : ', ' + `${services} services`}`
+  return 'Resources filtered on '
+    + `${ageGroup.length === 0 ? '' : `${ageGroup} age range`}`
+    // + `${ageGroup.length === 0 && services.length === 0}` ? '' : ' and '
+    + `${services.length === 0 ? '' : `${services} services`}`
 })
 
 // Filter resources by county to format the resource listing section
 const filterByCounty = (county) => {
-  console.log(county)
   return state.filteredRepoData.filter(d => d.County.includes(county))
 }
 
 // Watch for changes in filter values (fieldFilters) and update ResourceCards as necessary
 watch(state.fieldFilters, (filters) => {
   // The filter fields
-  const {county, ageGroup, services} = filters
+  const {ageGroup, services} = filters
   // The base filtered data, we will sequentially update this object by passing it through each filter
   let filteredData = state.fullRepoData
-  if (county.length > 0) {
-    // Filter repo data on selected county
-    // filteredData = filteredData.filter(resource => {
-    //     return resource.County.includes(county)
-    // })
-    const scrollToElement = document.getElementById(county)
-    scrollToElement.scrollIntoView()
-  } else {
-    // Remove county filter
-  }
 
   if (ageGroup.length > 0) {
     // Filter repo data on selected age range

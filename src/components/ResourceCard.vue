@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col p-4 border-2 border-gray-600 rounded-md">
+  <div class="flex flex-col mb-4">
     <div class="block">
       <h3 class="inline">{{ resource.Name }}</h3>
       <p class="inline">

@@ -1,5 +1,5 @@
 <template>
-  <table class="block w-full table-fixed overflow-x-scroll border-collapse">
+  <table class="block w-full table-fixed overflow-x-scroll border-collapse text-xs">
     <thead class="sticky">
       <tr>
         <th
@@ -37,7 +37,6 @@ const props = defineProps({
 })
 
 const highlighted = (a) => {
-  console.log(a)
   return props.filteredRepoDataIDs.includes(a) ? 'bg-purple-200' : ''
 }
 </script>
