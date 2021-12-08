@@ -8,6 +8,9 @@
     @apply text-2xl mt-3 mb-2;
   }
   h3 {
+    @apply text-xl mt-2 mb-1;
+  }
+  h4 {
     @apply text-lg mt-2 mb-1;
   }
   a {

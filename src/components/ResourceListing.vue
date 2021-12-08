@@ -9,6 +9,7 @@
         >Visit website</a>)
       </p>
     </div>
+    <h4>Contact information</h4>
     <p class="">
       <a
         v-if="valueIsDefined(resource['Email Address'])"
@@ -33,6 +34,10 @@
         >Open in map</a>)
       </p>
     </div>
+    <h4>Services</h4>
+    <ul>
+      <li v-for="resource in resource.services" :key='resource'>{{ resource }}</li>
+    </ul>
   </div>
 </template>
 
