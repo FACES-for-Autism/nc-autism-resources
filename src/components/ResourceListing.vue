@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col mb-4">
-    <div class="block">
-      <h3 class="inline">{{ resource.Name }}</h3>
+    <div class="w-full mt-4">
+      <h4 class="inline font-semibold">{{ resource.Name }}</h4>
       <p class="inline">
         (<a
           v-if="valueIsDefined(resource['Web Address'])"
@@ -9,34 +9,37 @@
         >Visit website</a>)
       </p>
     </div>
-    <h4>Contact information</h4>
-    <p class="">
-      <a
+    <h5 class="font-semibold ml-4">Contact information</h5>
+    <address class="ml-8">
+      Email: <a
         v-if="valueIsDefined(resource['Email Address'])"
         :href="'mailto:' + resource['Email Address']"
       >{{ resource['Email Address'] }}</a>
-      <br v-if="valueIsDefined(resource['Email Address'])">
-      <a
+      <br>
+      Phone: <a
         v-if="valueIsDefined(resource['Phone Number'])"
         :href="'tel:+1-' + resource['Phone Number']"
       >{{  resource['Phone Number'] }}</a>
-    </p>
-    <div class="block">
-      <address
+      <br>
+      Address: <span
         class="inline"
         v-if="valueIsDefined(resource['Physical Address'])"
       >{{ resource['Physical Address'] }}
-      </address>
-      <p class="inline">
+      </span>
+      <span class="inline">
         (<a
           v-if="valueIsDefined(resource['Physical Address'])"
           href="#"
         >Open in map</a>)
-      </p>
-    </div>
-    <h4>Services</h4>
-    <ul>
-      <li v-for="resource in resource.services" :key='resource'>{{ resource }}</li>
+      </span>
+    </address>
+    <h5 class="font-semibold ml-4">Services</h5>
+    <ul class="grid grid-cols-2 w-max ml-8 list-inside list-disc">
+      <li
+        class="mr-4"
+        v-for="resource in resource.services"
+        :key=resource
+      >{{ resource }}</li>
     </ul>
   </div>
 </template>

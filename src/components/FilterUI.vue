@@ -1,9 +1,9 @@
 <template>
-  <div class="">
+  <div class="flex flex-col p-4">
     <div>
       <label class="mr-2" for="age">Filter resources by ages served:</label>
       <select
-        class="w-min mb-5 border-2 border-gray-500 rounded-sm"
+        class="w-min mr-2 cursor-pointer border-2 border-gray-500 rounded-sm"
         @change="ageGroupSelected"
         v-model="selectedAgeGroup"
         name="age_filter"
@@ -16,22 +16,30 @@
           :value="ageGroup"
         >{{ ageGroup }}</option>
       </select>
+      <button 
+        class="italic"
+        v-if="selectedAgeGroup !== ''"
+        @click="selectedAgeGroup = ''">
+        Remove age range filter
+      </button>
     </div>
-    <button v-if="selectedAgeGroup !== ''" @click="selectedAgeGroup = ''">
-      Remove age range filter
-    </button>
-    <fieldset class="grid grid-cols-2">
+    <fieldset class="w-full mt-6">
       <legend class="mb-2">Filter resources by provided services:</legend>
-      <template
-        v-for="service in uniqueServices"
-        :key="service"
+      <div
+        class="grid grid-cols-2 lg:grid-cols-3 w-max grid-flow-row gap-x-3 mx-auto"
       >
-        <div>
-          <input type="checkbox" name="services" :id="'service'" class="mr-2">
-          <label :for="'service'">{{ service }}</label>
+        <div v-for="service in uniqueServices" :key="service">
+          <input type="checkbox" name="services" :id="service" class="mr-2">
+          <label :for="service">{{ service }}</label>
         </div>
-      </template>
+      </div>
     </fieldset>
+    <button 
+      class="mx-auto mt-6 border-2 border-gray-600 p-2 rounded-md" 
+      @click="closeFilterMenu"
+    >
+      Close filter menu
+    </button>
   </div>
 </template>
 
@@ -54,10 +62,14 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['update:ageGroupFilter'])
+const emit = defineEmits(['update:ageGroupFilter', 'closeFilterMenu'])
 
 function ageGroupSelected() {
   emit('update:ageGroupFilter', selectedAgeGroup)
+}
+
+function closeFilterMenu() {
+  emit('closeFilterMenu')
 }
 </script>
 

@@ -1,73 +1,68 @@
 <template>
   <div class="grid grid-cols-12 container mx-auto">
     <header class="col-span-12 flex flex-row items-center">
-      <a class="w-20" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
+      <a class="w-16" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
         <img class="object-contain" src="@/assets/faces-logo.png" alt="FACES program logo">
       </a>
       <h1 class="ml-4 font-bold">FACES Resources Repository</h1>
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </header>
     <main class="col-span-12 md:col-start-3 md:col-span-8">
-      <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 mb-2 py-2 bg-white">
+      <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 py-2 bg-white">
         <h2 class="w-full font-bold">Resource listing</h2>
-        <label class="mr-2" for="county">Jump to a specific county:</label>
-        <select
-          class="w-min border-2 border-gray-500 rounded-sm"
-          @change="goToCountyListing"
-          name="county_filter"
-          id="county"
-        >
-          <option selected disabled value="">Select a county</option>
-          <option
-            v-for="county in state.uniqueCounties"
-            :key="county"
-            :value="county"
+        <div class="w-full flex flex-row items-baseline mb-2">
+          <label class="mr-2" for="county">Jump to a specific county:</label>
+          <select
+            class="w-min cursor-pointer border-2 border-gray-500 rounded-sm"
+            @change="goToCountyListing"
+            name="county_filter"
+            id="county"
           >
-            {{ county }}
-          </option>
-        </select>
-        <div class="ml-auto">
+            <option selected disabled value="">Select a county</option>
+            <option
+              v-for="county in state.uniqueCounties"
+              :key="county"
+              :value="county"
+            >
+              {{ county }}
+            </option>
+          </select>
           <button
-          class="font-semibold"
+          class="ml-auto font-semibold"
             @click="toggleFilterMenuVisibility"
-          >Filter resources</button>
+          >Filter resources</button>  
         </div>
-        <transition name="vert-slide">
-            <FilterUI
-              class="w-full flex flex-row items-start justify-around mt-4 overflow-hidden"
-              v-if="state.showFilters"
-              v-model:ageGroupFilter="state.fieldFilters.ageGroup"
-              :uniqueAgeGroups="state.uniqueAgeGroups"
-              :uniqueServices="state.uniqueServices"
-            />
-        </transition>
-        <div class="w-full mt-2 border-t-2 border-gray-500">
-          <p class="inline mr-2">{{ filterText }}</p>
+        <div class="w-full flex flex-row border-t-2 border-gray-600">
+          <span class="">{{ filterText }}</span>
           <button
-            class="italic"
+            class="italic ml-auto"
             @click="removeAllFilters"
             v-show="filterText !== DEFAULT_FILTER_TEXT"
           >Remove all filters</button>
         </div>
+        <transition name="vert-slide">
+          <FilterUI
+            class="w-full absolute top-full flex flex-row items-start justify-around overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
+            v-if="state.showFilters"
+            v-model:ageGroupFilter="state.fieldFilters.ageGroup"
+            :uniqueAgeGroups="state.uniqueAgeGroups"
+            :uniqueServices="state.uniqueServices"
+            @closeFilterMenu="state.showFilters = false"
+          />
+        </transition>
       </div>
       <div class="flex flex-col">
         <div
-          class="mx-2 mb-2 p-2 border-2 border-gray-100 shadow-md rounded-md"
+          class=""
           v-for="county in state.uniqueCounties.sort()"
           :key="county"
           :id="county"
         >
-          <div class="">
-            <h3 class="text-gray-900 font-semibold bg-white">
-              <!-- <a
-                :href="'#' + county"
-                class="text-gray-900 font-semibold no-underline"
-              > -->
-                {{ county }}
-              <!-- </a> -->
-            </h3>
-          </div>
+          <h3 class="sticky text-gray-900 font-semibold bg-white border-b-2 border-gray-600" :style="stickyTopOffset">
+              {{ county }} County
+          </h3>
           <ResourceListing
+            class="ml-4"
             v-for="resource in filterByCounty(county)"
             :key="resource.id"
             :resource="resource"
@@ -80,28 +75,26 @@
         </div>
       </div>
     </main>
-    <footer class="col-start-4 col-span-9">
+    <!-- <footer class="col-start-4 col-span-9">
       <h2>Full data table (for testing)</h2>
       <TheDataTable
         :allRepoData="state.fullRepoData"
         :filteredRepoDataIDs="state.filteredRepoData.map(d => d.id)"
       />
-    </footer>
+    </footer> -->
   </div>
 </template>
 
 <script setup>
-import { reactive, watch, onBeforeMount, computed } from 'vue'
+import { reactive, watch, onBeforeMount, computed, onMounted } from 'vue'
 
 // Import child components
 import FilterUI from './components/FilterUI.vue'
 import ResourceListing from './components/ResourceListing.vue'
-import TheDataTable from './components/TheDataTable.vue'
+// import TheDataTable from './components/TheDataTable.vue'
 
 // Import the data source (currently a locally stored test CSV file)
 import rawRepoData from './assets/data/sample-repo-Duplin.csv'
-
-const DEFAULT_FILTER_TEXT = 'Showing all resources'
 
 // Create reactive data
 const state = reactive({
@@ -117,7 +110,22 @@ const state = reactive({
   uniqueAgeGroups: [],
   uniqueCounties: [],
   uniqueServices: [],
-  showFilters: false
+  showFilters: false,
+  stickyTopOffset: 0
+})
+
+
+
+const stickyTopOffset = computed(() => {
+    return {
+      top: state.stickyTopOffset + 'px'
+    }
+})
+
+// Set the top offset for the sticky county header when scrolling
+onMounted(() => {
+  state.stickyTopOffset = document.getElementById('resource-list-header')
+    .getBoundingClientRect().height
 })
 
 // Clean, reformat, and pass the CSV data into the reactive data store before the component is mounted
@@ -184,6 +192,9 @@ const toggleFilterMenuVisibility = () => {
   state.showFilters = !state.showFilters
 }
 
+// The text to show when no filters are set
+const DEFAULT_FILTER_TEXT = 'Showing all resources'
+
 // Compose the text describing the current set filters
 const filterText = computed(() => {
   // If no filters are set return boilerplate text
@@ -204,11 +215,6 @@ const removeAllFilters = () => {
   state.fieldFilters.services = []
 }
 
-// Filter resources by county to format the resource listing section
-const filterByCounty = (county) => {
-  return state.filteredRepoData.filter(d => d.County.includes(county))
-}
-
 // Watch for changes in filter values (fieldFilters) and update ResourceCards as necessary
 watch(state.fieldFilters, (filters) => {
   // The filter fields
@@ -216,24 +222,26 @@ watch(state.fieldFilters, (filters) => {
   // The base filtered data, we will sequentially update this object by passing it through each filter
   let filteredData = state.fullRepoData
 
+  // If filter is set on age group, repo data on selected age range
   if (ageGroup.length > 0) {
-    // Filter repo data on selected age range
     filteredData = filteredData.filter(resource => {
       return resource['Ages listed'] === ageGroup
     })
-  } else {
-    // Remove age filter
   }
 
+  // If filter is set on services, repo data on selected services
   if (services.length > 0) {
-    // Filter repo data on selected services
-  } else {
-    // Remove services filter
+    // TODO: Code to filter repo data on selected services
   }
 
   // Update reactive filtered repo data with final filtered data
   state.filteredRepoData = filteredData
 })
+
+// Filter resources by county to update the resource listing section
+const filterByCounty = (county) => {
+  return state.filteredRepoData.filter(d => d.County.includes(county))
+}
 </script>
 
 <style>
@@ -247,7 +255,7 @@ watch(state.fieldFilters, (filters) => {
 .vert-slide-leave-active {
   transition-property: all;
   transition-duration: 0.3s;
-  transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in;
   max-height: 200px;
 }
 
