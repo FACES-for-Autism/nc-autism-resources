@@ -8,7 +8,10 @@
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </header>
     <main class="col-span-12 md:col-start-3 md:col-span-8">
-      <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 py-2 bg-white">
+      <p>
+        Browse autism resources across North Carolina compiled by the FACES team. Resources are organized by county and can be filtered on the general age range and the types of services provided. 
+      </p>
+      <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
         <h2 class="w-full font-bold">Resource listing</h2>
         <div class="w-full flex flex-row items-baseline mb-2">
           <label class="mr-2" for="county">Jump to a specific county:</label>
@@ -32,8 +35,8 @@
             @click="toggleFilterMenuVisibility"
           >Filter resources</button>  
         </div>
-        <div class="w-full flex flex-row border-t-2 border-gray-600">
-          <span class="">{{ filterText }}</span>
+        <div class="w-full flex flex-row pb-2 border-t-2 border-gray-600">
+          <span class="mt-2">{{ filterText }}</span>
           <button
             class="italic ml-auto"
             @click="removeAllFilters"
@@ -45,6 +48,7 @@
             class="w-full absolute top-full flex flex-row items-start justify-around overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
             v-if="state.showFilters"
             v-model:ageGroupFilter="state.fieldFilters.ageGroup"
+            v-model:servicesGroupFilter="state.fieldFilters.services"
             :uniqueAgeGroups="state.uniqueAgeGroups"
             :uniqueServices="state.uniqueServices"
             @closeFilterMenu="state.showFilters = false"
@@ -94,7 +98,7 @@ import ResourceListing from './components/ResourceListing.vue'
 // import TheDataTable from './components/TheDataTable.vue'
 
 // Import the data source (currently a locally stored test CSV file)
-import rawRepoData from './assets/data/sample-repo-Duplin.csv'
+import rawRepoData from './assets/data/MasterListRepository.csv'
 
 // Create reactive data
 const state = reactive({
@@ -159,15 +163,16 @@ onBeforeMount(() => {
   state.fullRepoData = cleanRepoData
   state.filteredRepoData = cleanRepoData
 
+  const EMPTY_VALS = [null, undefined, '']
   // Get the unique age groups from the repo dataset for the age filter select
   state.uniqueAgeGroups = [
-    ...new Set(cleanRepoData.map(d => d['Ages listed']))
-  ]
+    ...new Set(cleanRepoData.map(resource => resource['Ages listed']))
+  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
 
   // Get the unique counties from the repo dataset for the county select
   state.uniqueCounties = [
     ...new Set(cleanRepoData.map(d => d['County'].split(' (serves)')[0]))
-  ]
+  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
 
   // Get the unique services from the repo dataset for the services filter select
   state.uniqueServices = [
@@ -176,7 +181,7 @@ onBeforeMount(() => {
         (prev, current) => prev.concat(current), []
       )
     )
-  ]
+  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
 })
 
 // Jump to the selected county section
@@ -231,7 +236,10 @@ watch(state.fieldFilters, (filters) => {
 
   // If filter is set on services, repo data on selected services
   if (services.length > 0) {
-    // TODO: Code to filter repo data on selected services
+    console.log(services)
+    filteredData = filteredData.filter(resource => {
+      return services.some(service => resource.services.includes(service))
+    })
   }
 
   // Update reactive filtered repo data with final filtered data

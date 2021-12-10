@@ -29,7 +29,15 @@
         class="grid grid-cols-2 lg:grid-cols-3 w-max grid-flow-row gap-x-3 mx-auto"
       >
         <div v-for="service in uniqueServices" :key="service">
-          <input type="checkbox" name="services" :id="service" class="mr-2">
+          <input
+            class="mr-2"
+            type="checkbox"
+            name="services"
+            :id="service"
+            :value="service"
+            v-model="selectedServices"
+            @change="serviceSelected"
+          >
           <label :for="service">{{ service }}</label>
         </div>
       </div>
@@ -49,10 +57,14 @@ import { ref } from 'vue'
 
 // Reactive data to model filter selections
 const selectedAgeGroup = ref('')
+const selectedServices = ref([])
 
 defineProps({
   ageGroupFilter: {
     type: String
+  },
+  servicesGroupFilter: {
+    type: Array
   },
   uniqueAgeGroups: {
     type: Array
@@ -62,10 +74,14 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['update:ageGroupFilter', 'closeFilterMenu'])
+const emit = defineEmits(['update:ageGroupFilter', 'update:servicesGroupFilter', 'closeFilterMenu'])
 
 function ageGroupSelected() {
   emit('update:ageGroupFilter', selectedAgeGroup)
+}
+
+function serviceSelected() {
+  emit('update:servicesGroupFilter', selectedServices)
 }
 
 function closeFilterMenu() {
