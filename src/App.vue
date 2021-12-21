@@ -1,20 +1,43 @@
 <template>
-  <div class="grid grid-cols-12 container mx-auto">
-    <header class="col-span-12 flex flex-row items-center">
+  <header class="sticky top-0 z-20 w-screen border-b border-black bg-white">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row items-center">
       <a class="w-16" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
         <img class="object-contain" src="@/assets/faces-logo.png" alt="FACES program logo">
       </a>
       <h1 class="ml-4 font-bold">FACES Resources Repository</h1>
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
-    </header>
-    <main class="col-span-12 md:col-start-3 md:col-span-8">
+    </div>
+  </header>
+  <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0">
+    <nav class="md:fixed flex-col justify-items-start md:h-screen md:w-1/4 overflow-y-auto">
+      <SelectInput
+        :groupName="'county'"
+        :values="state.uniqueCounties"
+        @selectUpdate="goToCountyListing"
+      >
+        <template #label>
+          Go to resources for a specific county:
+        </template>
+        <template #default-value>
+          Select a county
+        </template>
+      </SelectInput>
+      <FilterUI
+            class=""
+            v-model:ageGroupFilter="state.fieldFilters.ageGroup"
+            v-model:servicesGroupFilter="state.fieldFilters.services"
+            :uniqueAgeGroups="state.uniqueAgeGroups"
+            :uniqueServices="state.uniqueServices"
+          />
+    </nav>
+    <main class="relative md:left-1/4 md:w-3/4">
       <p>
         Browse autism resources across North Carolina compiled by the FACES team. Resources are organized by county and can be filtered on the general age range and the types of services provided. 
       </p>
       <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
         <h2 class="w-full font-bold">Resource listing</h2>
-        <div class="w-full flex flex-row items-baseline mb-2">
-          <label class="mr-2" for="county">Jump to a specific county:</label>
+        <div class="md:hidden w-full flex flex-row items-baseline mb-2">
+          <label class="mr-2" for="county">Go to resources for a specific county:</label>
           <select
             class="w-min cursor-pointer border-2 border-gray-500 rounded-sm"
             @change="goToCountyListing"
@@ -31,7 +54,7 @@
             </option>
           </select>
           <button
-          class="ml-auto font-semibold"
+          class="md:hidden ml-auto font-semibold"
             @click="toggleFilterMenuVisibility"
           >Filter resources</button>  
         </div>
@@ -45,7 +68,7 @@
         </div>
         <transition name="vert-slide">
           <FilterUI
-            class="w-full absolute top-full flex flex-row items-start justify-around overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
+            class="w-full absolute top-full flex flex-row items-start justify-around md:hidden overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
             v-if="state.showFilters"
             v-model:ageGroupFilter="state.fieldFilters.ageGroup"
             v-model:servicesGroupFilter="state.fieldFilters.services"
@@ -95,10 +118,15 @@ import { reactive, watch, onBeforeMount, computed, onMounted } from 'vue'
 // Import child components
 import FilterUI from './components/FilterUI.vue'
 import ResourceListing from './components/ResourceListing.vue'
+import SelectInput from './components/SelectInput.vue'
 // import TheDataTable from './components/TheDataTable.vue'
 
-// Import the data source (currently a locally stored test CSV file)
+// Import composables
+import { cleanRawFACESData } from './composables/clean-FACES-data'
+
+// Import the FACES repository data (currently a locally stored test CSV file)
 import rawRepoData from './assets/data/MasterListRepository_12-10-21.csv'
+import { counties } from './assets/data/NC-counties.json'
 
 // Create reactive data
 const state = reactive({
@@ -112,7 +140,7 @@ const state = reactive({
     'services': []
   },
   uniqueAgeGroups: [],
-  uniqueCounties: [],
+  uniqueCounties: counties,
   uniqueServices: [],
   showFilters: false,
   stickyTopOffset: 0
@@ -134,31 +162,8 @@ onMounted(() => {
 
 // Clean, reformat, and pass the CSV data into the reactive data store before the component is mounted
 onBeforeMount(() => {
-  // Remove leading/trailing whitespace in string data and add an id key to each entry in the dataset
-  const cleanRepoData = rawRepoData.map((resource, i) => {
-    // Add id parameter to each resource object and an empty array to hold a list of services from the data
-    let cleanResource = {
-      id: i,
-      services: []
-    }
-
-    Object.entries(resource).forEach(d => {
-      // Some string values may have leading or trailing whitespace, trim these
-      cleanResource[d[0].trim()] = typeof(d[1]) === 'string'
-        ? d[1].trim() : d[1]
-
-      // If the parameter value of the resource is a string and the value is "yes", add the parameter name (i.e., the service name) to the list of services
-      if (
-        typeof(d[1]) === 'string' 
-        && d[1].toLowerCase() === 'yes'
-      ) {
-        // NOTE: split is to remove " (Yes or No)" text from first service parameter name
-        cleanResource.services.push(d[0].split(' (Yes or No)')[0])
-      }
-    })
-
-    return cleanResource
-  });
+  // Clean the data
+  const cleanRepoData = cleanRawFACESData(rawRepoData)
 
   state.fullRepoData = cleanRepoData
   state.filteredRepoData = cleanRepoData
@@ -167,11 +172,6 @@ onBeforeMount(() => {
   // Get the unique age groups from the repo dataset for the age filter select
   state.uniqueAgeGroups = [
     ...new Set(cleanRepoData.map(resource => resource['Ages listed']))
-  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
-
-  // Get the unique counties from the repo dataset for the county select
-  state.uniqueCounties = [
-    ...new Set(cleanRepoData.map(d => d['County'].split(' (serves)')[0]))
   ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
 
   // Get the unique services from the repo dataset for the services filter select
@@ -185,10 +185,10 @@ onBeforeMount(() => {
 })
 
 // Jump to the selected county section
-const goToCountyListing = (e) => {
+const goToCountyListing = (selectedValue) => {
   const resourceListDivOffset = document.getElementById('resource-list-header')
     .getBoundingClientRect().height
-  const scrollToElement = document.getElementById(e.target.value)
+  const scrollToElement = document.getElementById(selectedValue)
   window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - resourceListDivOffset)
 }
 
