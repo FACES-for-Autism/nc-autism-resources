@@ -1,8 +1,8 @@
 /**
- * Clean the raw FACES resource repository data. Expects the general structure of the data contained in [Master List Repository](https://docs.google.com/spreadsheets/d/1NuGjSo7xwBRtCx_kCpoT2eb9BmEEkjkr/edit?usp=sharing&ouid=103668074026507033128&rtpof=true&sd=true)
+ * Clean the raw FACES resource repository data. Expects the general structure of the data contained in [Master List Repository](https://docs.google.com/spreadsheets/d/1NuGjSo7xwBRtCx_kCpoT2eb9BmEEkjkr/edit?usp=sharing&ouid=103668074026507033128&rtpof=true&sd=true).
  * 
- * @param {{string: any}} rawData An object containing the parameters of the raw data
- * @returns {{string: any}} An object containing the cleaned data parameters
+ * @param {{string: any}} rawData An object containing the structured raw data to be cleaned
+ * @returns {{cleanData: {}, uniqueAgeGroups: string[], uniqueServices: string[]}} An object containing the cleaned data and a list of the unique age groups and a list of the unique services contained in the cleaned data
  */
 export function cleanRawFACESData(rawData) {
   // Remove leading/trailing whitespace in string data and add an id key to each entry in the dataset
@@ -29,6 +29,26 @@ export function cleanRawFACESData(rawData) {
     })
 
     return cleanResource
-  });
-  return cleanData
+  })
+
+  const EMPTY_VALS = [null, undefined, '']
+  // Get the unique age groups from the repo dataset for the age filter select
+  const uniqueAgeGroups = [
+    ...new Set(cleanData.map(resource => resource['Ages listed']))
+  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
+
+  // Get the unique services from the repo dataset for the services filter select
+  const uniqueServices = [
+    ...new Set(
+      cleanData.map(d => d['services']).reduce(
+        (prev, current) => prev.concat(current), []
+      )
+    )
+  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
+
+  return {
+    cleanData,
+    uniqueAgeGroups,
+    uniqueServices
+  }
 }

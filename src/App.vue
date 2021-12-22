@@ -8,29 +8,64 @@
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </div>
   </header>
-  <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0">
-    <nav class="md:fixed flex-col justify-items-start md:h-screen md:w-1/4 overflow-y-auto">
+  <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row">
+    <nav 
+      class="sticky inline md:h-screen md:w-1/4 overflow-y-auto"  :style="stickyTopOffset"
+    >
       <SelectInput
         :groupName="'county'"
         :values="state.uniqueCounties"
-        @selectUpdate="goToCountyListing"
+        v-model:selectedValue="state.selectedCounty.county"
       >
         <template #label>
-          Go to resources for a specific county:
+          Go to specific county:
         </template>
         <template #default-value>
           Select a county
         </template>
       </SelectInput>
-      <FilterUI
+      <div>
+        <h5 class="font-semibold">Filter resources</h5>
+        <SelectInput
+          :groupName="'ages'"
+          :values="state.uniqueAgeGroups"
+          v-model:selectedValue="state.fieldFilters.ageGroup"
+        >
+          <template #label>
+            Age range:
+          </template>
+          <template #default-value>
+            Select an age range
+          </template>
+        </SelectInput>
+        <button
+          class="italic"
+          v-if="state.fieldFilters.ageGroup !== ''"
+          @click="state.fieldFilters.ageGroup = ''">
+          Remove age range filter
+        </button>
+        <fieldset class="mt-6">
+          <legend class="mb-2">Select services:</legend>
+          <div
             class=""
-            v-model:ageGroupFilter="state.fieldFilters.ageGroup"
-            v-model:servicesGroupFilter="state.fieldFilters.services"
-            :uniqueAgeGroups="state.uniqueAgeGroups"
-            :uniqueServices="state.uniqueServices"
-          />
+          >
+            <div v-for="service in state.uniqueServices" :key="service">
+              <input
+                class="mr-2"
+                type="checkbox"
+                name="services"
+                :id="service"
+                :value="service"
+                v-model="state.fieldFilters.services"
+                @change="serviceSelected"
+              >
+              <label :for="service">{{ service }}</label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
     </nav>
-    <main class="relative md:left-1/4 md:w-3/4">
+    <main class="inline md:left-1/4 md:w-3/4">
       <p>
         Browse autism resources across North Carolina compiled by the FACES team. Resources are organized by county and can be filtered on the general age range and the types of services provided. 
       </p>
@@ -58,15 +93,15 @@
             @click="toggleFilterMenuVisibility"
           >Filter resources</button>  
         </div>
-        <div class="w-full flex flex-row pb-2 border-t-2 border-gray-600">
+        <div class="w-full mt-2 pb-2">
           <span class="mt-2">{{ filterText }}</span>
           <button
-            class="italic ml-auto"
+            class="font-semibold ml-2 text-fuchsia-600"
             @click="removeAllFilters"
             v-show="filterText !== DEFAULT_FILTER_TEXT"
-          >Remove all filters</button>
+          >(Remove all filters)</button>
         </div>
-        <transition name="vert-slide">
+        <!-- <transition name="vert-slide">
           <FilterUI
             class="w-full absolute top-full flex flex-row items-start justify-around md:hidden overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
             v-if="state.showFilters"
@@ -76,7 +111,7 @@
             :uniqueServices="state.uniqueServices"
             @closeFilterMenu="state.showFilters = false"
           />
-        </transition>
+        </transition> -->
       </div>
       <div class="flex flex-col">
         <div
@@ -85,7 +120,7 @@
           :key="county"
           :id="county"
         >
-          <h3 class="sticky text-gray-900 font-semibold bg-white border-b-2 border-gray-600" :style="stickyTopOffset">
+          <h3 class="sticky text-gray-900 font-semibold bg-white border-b border-black" :style="stickyTopOffset">
               {{ county }} County
           </h3>
           <ResourceListing
@@ -116,7 +151,7 @@
 import { reactive, watch, onBeforeMount, computed, onMounted } from 'vue'
 
 // Import child components
-import FilterUI from './components/FilterUI.vue'
+// import FilterUI from './components/FilterUI.vue'
 import ResourceListing from './components/ResourceListing.vue'
 import SelectInput from './components/SelectInput.vue'
 // import TheDataTable from './components/TheDataTable.vue'
@@ -136,9 +171,10 @@ const state = reactive({
   filteredRepoData: {},
   // The field values used to filter the dataset
   fieldFilters: {
-    'ageGroup': '',
-    'services': []
+    ageGroup: '',
+    services: []
   },
+  selectedCounty: { county: '' },
   uniqueAgeGroups: [],
   uniqueCounties: counties,
   uniqueServices: [],
@@ -146,8 +182,19 @@ const state = reactive({
   stickyTopOffset: 0
 })
 
+// Clean, reformat, and pass the CSV data into the reactive data store before the component is mounted
+onBeforeMount(() => {
+  // Clean the data
+  const cleanedRepoData = cleanRawFACESData(rawRepoData)
 
+  state.fullRepoData = cleanedRepoData.cleanData
+  state.filteredRepoData = cleanedRepoData.cleanData
 
+  state.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
+  state.uniqueServices = cleanedRepoData.uniqueServices
+})
+
+// Set the offset 
 const stickyTopOffset = computed(() => {
     return {
       top: state.stickyTopOffset + 'px'
@@ -160,37 +207,11 @@ onMounted(() => {
     .getBoundingClientRect().height
 })
 
-// Clean, reformat, and pass the CSV data into the reactive data store before the component is mounted
-onBeforeMount(() => {
-  // Clean the data
-  const cleanRepoData = cleanRawFACESData(rawRepoData)
-
-  state.fullRepoData = cleanRepoData
-  state.filteredRepoData = cleanRepoData
-
-  const EMPTY_VALS = [null, undefined, '']
-  // Get the unique age groups from the repo dataset for the age filter select
-  state.uniqueAgeGroups = [
-    ...new Set(cleanRepoData.map(resource => resource['Ages listed']))
-  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
-
-  // Get the unique services from the repo dataset for the services filter select
-  state.uniqueServices = [
-    ...new Set(
-      cleanRepoData.map(d => d['services']).reduce(
-        (prev, current) => prev.concat(current), []
-      )
-    )
-  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
+// Scroll to the selected county section when county selector is updated
+watch(state.selectedCounty, (county) => {
+  const scrollToElement = document.getElementById(county.county)
+  window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
 })
-
-// Jump to the selected county section
-const goToCountyListing = (selectedValue) => {
-  const resourceListDivOffset = document.getElementById('resource-list-header')
-    .getBoundingClientRect().height
-  const scrollToElement = document.getElementById(selectedValue)
-  window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - resourceListDivOffset)
-}
 
 // Toggle showing the filter menu
 const toggleFilterMenuVisibility = () => {
@@ -206,12 +227,8 @@ const filterText = computed(() => {
   if (Object.values(state.fieldFilters).every(d => d.length === 0)) {
     return DEFAULT_FILTER_TEXT
   }
-  const {ageGroup, services} = state.fieldFilters
 
-  return 'Resources filtered on '
-    + `${ageGroup.length === 0 ? '' : `${ageGroup} age range`}`
-    // + `${ageGroup.length === 0 && services.length === 0}` ? '' : ' and '
-    + `${services.length === 0 ? '' : `${services} services`}`
+  return 'Showing filtered resources'
 })
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
@@ -238,7 +255,7 @@ watch(state.fieldFilters, (filters) => {
   if (services.length > 0) {
     console.log(services)
     filteredData = filteredData.filter(resource => {
-      return services.some(service => resource.services.includes(service))
+      return services.every(service => resource.services.includes(service))
     })
   }
 

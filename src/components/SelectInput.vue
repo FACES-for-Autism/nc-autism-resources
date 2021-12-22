@@ -3,8 +3,9 @@
     <slot name="label"></slot>
   </label>
     <select
-      class="w-min cursor-pointer border-2 border-gray-500 rounded-sm"
+      class="w-min cursor-pointer border border-black rounded-sm"
       @change="selectChange"
+      v-model="currentValue"
       :name="groupName"
       :id="groupName"
     >
@@ -24,6 +25,9 @@
 
 <script setup>
 /* global defineProps defineEmits */
+import { ref } from 'vue'
+
+const currentValue = ref('')
 
 defineProps({
   groupName: {
@@ -31,12 +35,15 @@ defineProps({
   },
   values: {
     type: Array
+  },
+  selectedValue: {
+    type: String
   }
 })
 
-const emit = defineEmits(['selectUpdate'])
+const emit = defineEmits(['update:selectedValue'])
 
-function selectChange(event) {
-  emit('selectUpdate', event.target.value)
+function selectChange() {
+  emit('update:selectedValue', currentValue)
 }
 </script>
