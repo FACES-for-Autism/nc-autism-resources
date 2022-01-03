@@ -5,7 +5,10 @@
  * @returns {{cleanData: {}, uniqueAgeGroups: string[], uniqueServices: string[]}} An object containing the cleaned data and a list of the unique age groups and a list of the unique services contained in the cleaned data
  */
 export function cleanRawFACESData(rawData) {
-  // Remove leading/trailing whitespace in string data and add an id key to each entry in the dataset
+  // Empty array to contain the primary unique services (services in dataset with specific header value (i.e., not included under "Other..."))
+  let uniqueServices = []
+
+  // Add an id key and an array of services to each entry in the dataset
   const cleanData = rawData.map((resource, i) => {
     // Add id parameter to each resource object and an empty array to hold a list of services from the data
     let cleanResource = {
@@ -14,9 +17,8 @@ export function cleanRawFACESData(rawData) {
     }
 
     Object.entries(resource).forEach(d => {
-      // Some string values may have leading or trailing whitespace, trim these
-      cleanResource[d[0].trim()] = typeof(d[1]) === 'string'
-        ? d[1].trim() : ''
+      // Add each column name and row value to the clean resource object
+      cleanResource[d[0]] = d[1]
 
       // If the parameter value of the resource is a string and the value is "yes", add the parameter name (i.e., the service name) to the list of services
       if (
@@ -24,9 +26,21 @@ export function cleanRawFACESData(rawData) {
         && d[1].toLowerCase() === 'yes'
       ) {
         // NOTE: split is to remove " (Yes or No)" text from first service parameter name
-        cleanResource.services.push(d[0].split(' (Yes or No)')[0])
+        const serviceName = d[0].split(' (Yes or No)')[0]
+        cleanResource.services.push(serviceName)
+
+        // Build the unique services array
+        if (!uniqueServices.includes(serviceName)) {
+          uniqueServices.push(serviceName)
+        }
       }
     })
+
+    // Some resource have additional services, add those to services array if so
+    const additionalServices = cleanResource['Other (List the other services)']
+    if (additionalServices) {
+      cleanResource.services = cleanResource.services.concat(additionalServices.split(', '))
+    }
 
     return cleanResource
   })
@@ -44,7 +58,7 @@ export function cleanRawFACESData(rawData) {
     return 0
   })
 
-  const EMPTY_VALS = [null, undefined, '']
+  // const EMPTY_VALS = [null, undefined, '']
   // Get the unique age groups from the repo dataset for the age filter select
   // const uniqueAgeGroups = [
   //   ...new Set(cleanData.map(resource => resource['Ages listed']))
@@ -54,20 +68,11 @@ export function cleanRawFACESData(rawData) {
     'Infants (0-1 year)',
     'Toddlers (1-3 years)',
     'Preschoolers (3-5 years)',
-    'Children (5-12)',
-    'Adolescents (12-18)',
+    'Children (5-12 years)',
+    'Adolescents (12-18 years)',
     'Young Adults (18-21 years)',
     'Adults (21+ years)'
   ]
-
-  // Get the unique services from the repo dataset for the services filter select
-  const uniqueServices = [
-    ...new Set(
-      cleanData.map(d => d['services']).reduce(
-        (prev, current) => prev.concat(current), []
-      )
-    )
-  ].filter(service => !EMPTY_VALS.includes(service))
 
   return {
     cleanData,
