@@ -31,6 +31,19 @@ export function cleanRawFACESData(rawData) {
     return cleanResource
   })
 
+  // Sort clean data by resource name
+  cleanData.sort((a, b) => {
+    let nameA = a.Name.toLowerCase()
+    let nameB = b.Name.toLowerCase()
+    if (nameA > nameB) {
+      return 1
+    }
+    if (nameA < nameB) {
+      return -1
+    }
+    return 0
+  })
+
   const EMPTY_VALS = [null, undefined, '']
   // Get the unique age groups from the repo dataset for the age filter select
   const uniqueAgeGroups = [
