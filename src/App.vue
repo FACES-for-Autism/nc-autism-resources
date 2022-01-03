@@ -9,8 +9,8 @@
     </div>
   </header>
   <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row">
-    <nav 
-      class="sticky inline md:h-screen md:w-1/4 overflow-y-auto"  :style="stickyTopOffset"
+    <nav
+      class="hidden pt-6 lg:sticky lg:inline lg:h-screen lg:w-1/4 overflow-y-auto" :style="stickyTopOffset"
     >
       <SelectInput
         :groupName="'county'"
@@ -25,7 +25,7 @@
         </template>
       </SelectInput>
       <div>
-        <h5 class="font-semibold">Filter resources</h5>
+        <h5 class="mt-8 font-semibold">Filter resources</h5>
         <SelectInput
           :groupName="'ages'"
           :values="state.uniqueAgeGroups"
@@ -65,12 +65,11 @@
         </fieldset>
       </div>
     </nav>
-    <main class="inline md:left-1/4 md:w-3/4">
-      <p>
+    <main class="inline lg:left-1/4 lg:w-3/4">
+      <p class="pt-6">
         Browse autism resources across North Carolina compiled by the FACES team. Resources are organized by county and can be filtered on the general age range and the types of services provided. 
       </p>
       <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
-        <h2 class="w-full font-bold">Resource listing</h2>
         <div class="md:hidden w-full flex flex-row items-baseline mb-2">
           <label class="mr-2" for="county">Go to resources for a specific county:</label>
           <select
@@ -120,9 +119,9 @@
           :key="county"
           :id="county"
         >
-          <h3 class="sticky text-gray-900 font-semibold bg-white border-b border-black" :style="stickyTopOffset">
+          <h2 class="sticky pt-4 text-gray-900 font-semibold bg-white border-b border-black" :style="stickyTopOffset">
               {{ county }} County
-          </h3>
+          </h2>
           <ResourceListing
             class="ml-4"
             v-for="resource in filterByCounty(county)"
@@ -205,8 +204,9 @@ const stickyTopOffset = computed(() => {
 
 // Set the top offset for the sticky county header when scrolling
 onMounted(() => {
-  state.stickyTopOffset = document.getElementById('resource-list-header')
-    .getBoundingClientRect().height
+  const headerElement = document.querySelector('header')
+  // const stickyOffset = document.getElementById('sticky-offset')
+  state.stickyTopOffset = headerElement.getBoundingClientRect().height
 })
 
 // Scroll to the selected county section when county selector is updated
@@ -249,8 +249,11 @@ watch(state.fieldFilters, (filters) => {
   if (ageGroup.length > 0) {
     filteredData = filteredData.filter(resource => {
       let [ageCat, ageNum] = ageGroup.split(' (')
-      console.log(ageNum)
-      return resource['Age categories'].toLowerCase().includes(ageCat.toLowerCase())
+      console.log(resource['Age categories'], ageNum)
+      if (resource['Age categories']) {
+        return resource['Age categories'].toLowerCase()
+          .includes(ageCat.toLowerCase())
+      }
     })
   }
 

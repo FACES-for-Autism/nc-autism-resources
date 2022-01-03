@@ -3,7 +3,7 @@
     <slot name="label"></slot>
   </label>
     <select
-      class="w-min cursor-pointer border border-black rounded-sm"
+      class="w-min p-1 cursor-pointer border border-black rounded-sm"
       @change="selectChange"
       v-model="currentValue"
       :name="groupName"

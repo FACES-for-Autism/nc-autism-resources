@@ -1,47 +1,43 @@
 <template>
   <div class="flex flex-col mb-4">
     <div class="w-full mt-4">
-      <h4 class="inline font-semibold">{{ resource.Name }}</h4>
-      <p class="inline">
-        (<a
-          v-if="valueIsDefined(resource['Web Address'])"
-          :href="resource['Web Address']"
-        >Visit website</a>)
-      </p>
+      <h3 class="inline font-semibold">{{ resource.Name }}</h3>
+      <span v-if="valueIsDefined(resource['Web Address'])" class="inline text-xl">
+        (<a :href="resource['Web Address']">Visit website</a>)
+      </span>
     </div>
-    <h5 class="font-semibold ml-4">Contact information</h5>
-    <address class="ml-8">
+    <h4 class="font-semibold mt-4">Contact information</h4>
+    <address class="not-italic">
       Email: <a
-        v-if="valueIsDefined(resource['Email Address'])"
+        v-if="valueIsDefined(resource['Email Address']) && resource['Email Address'].toLowerCase() !== 'n/a'"
         :href="'mailto:' + resource['Email Address']"
       >{{ resource['Email Address'] }}</a>
+      <span v-else>Not listed</span>
       <br>
       Phone: <a
-        v-if="valueIsDefined(resource['Phone Number'])"
+        v-if="valueIsDefined(resource['Phone Number']) && resource['Phone Number'].toLowerCase() !== 'n/a'"
         :href="'tel:+1-' + resource['Phone Number']"
-      >{{  resource['Phone Number'] }}</a>
+      >{{ resource['Phone Number'] }}</a>
+      <span v-else>Not listed</span>
       <br>
-      Address: <span
-        class="inline"
-        v-if="valueIsDefined(resource['Physical Address'])"
-      >{{ resource['Physical Address'] }}
-      </span>
-      <span class="inline">
-        (<a
-          v-if="valueIsDefined(resource['Physical Address'])"
-          href="#"
-        >Open in map</a>)
-      </span>
+      Address: 
+      <template v-if="valueIsDefined(resource['Physical Address'])"> 
+        <span class="inline">{{ resource['Physical Address'] }}</span>
+        <span class="inline"> (<a href="#">Open in map</a>)</span>
+      </template>
+      <span v-else>Not listed</span>
     </address>
-    <h5 class="font-semibold ml-4">Services</h5>
-    <ul class="grid grid-cols-2 w-max ml-8 list-inside list-disc">
+    <h4 class="font-semibold mt-4">Ages Served</h4>
+    <p v-if="valueIsDefined(resource['Age categories'])">{{ resource['Age categories'] }}</p>
+    <p v-else>Not listed</p>
+    <h4 class="font-semibold mt-4">Services</h4>
+    <ul class="grid md:grid-cols-2 md:pr-36 content-start list-inside list-disc">
       <li
-        class="mr-4"
         v-for="resource in resource.services"
         :key=resource
       >{{ resource }}</li>
     </ul>
-    <p class="ml-8" v-if="!valueIsDefined(resource.services)">No services listed</p>
+    <p v-if="!valueIsDefined(resource.services)">No services listed</p>
   </div>
 </template>
 

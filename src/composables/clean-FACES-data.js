@@ -58,12 +58,6 @@ export function cleanRawFACESData(rawData) {
     return 0
   })
 
-  // const EMPTY_VALS = [null, undefined, '']
-  // Get the unique age groups from the repo dataset for the age filter select
-  // const uniqueAgeGroups = [
-  //   ...new Set(cleanData.map(resource => resource['Ages listed']))
-  // ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
-
   const uniqueAgeGroups = [
     'Infants (0-1 year)',
     'Toddlers (1-3 years)',
