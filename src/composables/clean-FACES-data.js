@@ -16,7 +16,7 @@ export function cleanRawFACESData(rawData) {
     Object.entries(resource).forEach(d => {
       // Some string values may have leading or trailing whitespace, trim these
       cleanResource[d[0].trim()] = typeof(d[1]) === 'string'
-        ? d[1].trim() : d[1]
+        ? d[1].trim() : ''
 
       // If the parameter value of the resource is a string and the value is "yes", add the parameter name (i.e., the service name) to the list of services
       if (
@@ -46,9 +46,19 @@ export function cleanRawFACESData(rawData) {
 
   const EMPTY_VALS = [null, undefined, '']
   // Get the unique age groups from the repo dataset for the age filter select
+  // const uniqueAgeGroups = [
+  //   ...new Set(cleanData.map(resource => resource['Ages listed']))
+  // ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
+
   const uniqueAgeGroups = [
-    ...new Set(cleanData.map(resource => resource['Ages listed']))
-  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
+    'Infants (0-1 year)',
+    'Toddlers (1-3 years)',
+    'Preschoolers (3-5 years)',
+    'Children (5-12)',
+    'Adolescents (12-18)',
+    'Young Adults (18-21 years)',
+    'Adults (21+ years)'
+  ]
 
   // Get the unique services from the repo dataset for the services filter select
   const uniqueServices = [
@@ -57,7 +67,7 @@ export function cleanRawFACESData(rawData) {
         (prev, current) => prev.concat(current), []
       )
     )
-  ].filter(ageGroup => !EMPTY_VALS.includes(ageGroup))
+  ].filter(service => !EMPTY_VALS.includes(service))
 
   return {
     cleanData,

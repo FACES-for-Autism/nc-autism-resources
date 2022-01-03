@@ -11,6 +11,7 @@ module.exports = {
         .use('csv-loader')
           .loader('csv-loader')
           .options({
+            transform: d => d.trim(),
             dynamicTyping: true,
             header: true,
           })

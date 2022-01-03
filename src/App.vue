@@ -129,7 +129,7 @@
             :key="resource.id"
             :resource="resource"
           />
-          <div v-if="filterByCounty(county).length === 0">
+          <div v-show="filterByCounty(county).length === 0">
             <p>
               There are no resources in {{ county }} county that meet your filter criteria. Remove filters to view the resources in this county.
             </p>
@@ -192,6 +192,8 @@ onBeforeMount(() => {
 
   state.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
   state.uniqueServices = cleanedRepoData.uniqueServices
+
+  console.log(state.fullRepoData)
 })
 
 // Set the offset 
@@ -227,7 +229,6 @@ const filterText = computed(() => {
   if (Object.values(state.fieldFilters).every(d => d.length === 0)) {
     return DEFAULT_FILTER_TEXT
   }
-
   return 'Showing filtered resources'
 })
 
@@ -247,7 +248,9 @@ watch(state.fieldFilters, (filters) => {
   // If filter is set on age group, repo data on selected age range
   if (ageGroup.length > 0) {
     filteredData = filteredData.filter(resource => {
-      return resource['Ages listed'] === ageGroup
+      let [ageCat, ageNum] = ageGroup.split(' (')
+      console.log(ageNum)
+      return resource['Age categories'].toLowerCase().includes(ageCat.toLowerCase())
     })
   }
 

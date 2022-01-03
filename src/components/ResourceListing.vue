@@ -41,6 +41,7 @@
         :key=resource
       >{{ resource }}</li>
     </ul>
+    <p class="ml-8" v-if="!valueIsDefined(resource.services)">No services listed</p>
   </div>
 </template>
 
