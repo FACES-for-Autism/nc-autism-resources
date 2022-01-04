@@ -119,7 +119,7 @@
           :key="county"
           :id="county"
         >
-          <h2 class="sticky pt-4 text-gray-900 font-semibold bg-white border-b border-black" :style="stickyTopOffset">
+          <h2 class="sticky pt-4 pb-1 text-gray-900 font-semibold bg-white border-b border-black" :style="stickyTopOffset">
               {{ county }} County
           </h2>
           <ResourceListing
@@ -153,10 +153,11 @@ import { reactive, watch, onBeforeMount, computed, onMounted } from 'vue'
 // import FilterUI from './components/FilterUI.vue'
 import ResourceListing from './components/ResourceListing.vue'
 import SelectInput from './components/SelectInput.vue'
-// import TheDataTable from './components/TheDataTable.vue'
+
 
 // Import composables
 import { cleanRawFACESData } from './composables/clean-FACES-data'
+import { runOnResize } from './composables/handle-resize'
 
 // Import the FACES repository data (currently a locally stored test CSV file)
 import rawRepoData from './assets/data/MasterListRepository_12-10-21.csv'
@@ -192,21 +193,27 @@ onBeforeMount(() => {
   state.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
   state.uniqueServices = cleanedRepoData.uniqueServices
 
-  console.log(state.fullRepoData)
+  // Add window resize event listener to run sticky elements offset calculation when screen size changes
+  runOnResize(calculateStickyOffset)
 })
 
-// Set the offset 
+// Calculate the offset for sticky elements (county labels and desktop nav)
+const calculateStickyOffset = () => {
+  const headerElement = document.querySelector('header')
+  state.stickyTopOffset = headerElement.getBoundingClientRect().height
+}
+
+// Use computed property to set new offset on "stickyTopOffset" value change
 const stickyTopOffset = computed(() => {
     return {
       top: state.stickyTopOffset + 'px'
     }
 })
 
-// Set the top offset for the sticky county header when scrolling
+
 onMounted(() => {
-  const headerElement = document.querySelector('header')
-  // const stickyOffset = document.getElementById('sticky-offset')
-  state.stickyTopOffset = headerElement.getBoundingClientRect().height
+  // Set the initial offset for sticky elements (county labels and desktop nav)
+  calculateStickyOffset()
 })
 
 // Scroll to the selected county section when county selector is updated

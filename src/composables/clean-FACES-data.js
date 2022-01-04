@@ -1,7 +1,7 @@
 /**
  * Clean the raw FACES resource repository data. Expects the general structure of the data contained in [Master List Repository](https://docs.google.com/spreadsheets/d/1NuGjSo7xwBRtCx_kCpoT2eb9BmEEkjkr/edit?usp=sharing&ouid=103668074026507033128&rtpof=true&sd=true).
  * 
- * @param {{string: any}} rawData An object containing the structured raw data to be cleaned
+ * @param {string: any} rawData An object containing the structured raw data to be cleaned
  * @returns {{cleanData: {}, uniqueAgeGroups: string[], uniqueServices: string[]}} An object containing the cleaned data and a list of the unique age groups and a list of the unique services contained in the cleaned data
  */
 export function cleanRawFACESData(rawData) {
