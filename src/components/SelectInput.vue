@@ -1,9 +1,10 @@
 <template>
-  <label class="mr-2" :for="groupName">
-    <slot name="label"></slot>
-  </label>
+  <div>
+    <label class="mr-2 mb-2" :for="groupName">
+      <slot name="label"></slot>
+    </label>
     <select
-      class="w-min p-1 cursor-pointer border border-black rounded-sm"
+      class="w-full p-1 cursor-pointer border border-black rounded-sm"
       @change="selectChange"
       v-model="currentValue"
       :name="groupName"
@@ -20,6 +21,7 @@
         {{ value }}
       </option>
     </select>
+  </div>
 </template>
 
 

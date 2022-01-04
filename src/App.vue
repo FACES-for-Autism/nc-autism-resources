@@ -1,20 +1,22 @@
 <template>
   <header class="sticky top-0 z-20 w-screen border-b border-black bg-white">
     <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row items-center">
-      <a class="w-16" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
+      <a class="w-32 md:w-16" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
         <img class="object-contain" src="@/assets/faces-logo.png" alt="FACES program logo">
       </a>
-      <h1 class="ml-4 font-bold">FACES Resources Repository</h1>
+      <h1 class="text-2xl md:text-4xl ml-4 font-bold">FACES Resources Repository</h1>
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </div>
   </header>
   <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row">
     <nav
-      class="hidden pt-6 lg:sticky lg:inline lg:h-screen lg:w-1/4 overflow-y-auto" :style="stickyTopOffset"
+      class="hidden pt-6 lg:sticky lg:inline lg:h-screen lg:w-1/4 overflow-y-auto"
+      :style="stickyTopOffset"
     >
       <SelectInput
+        class="flex flex-col w-11/12"
         :groupName="'county'"
-        :values="state.uniqueCounties"
+        :values="counties"
         v-model:selectedValue="state.selectedCounty.county"
       >
         <template #label>
@@ -27,8 +29,9 @@
       <div>
         <h5 class="mt-8 font-semibold">Filter resources</h5>
         <SelectInput
+          class="flex flex-col w-11/12"
           :groupName="'ages'"
-          :values="state.uniqueAgeGroups"
+          :values="STATIC_DATA.uniqueAgeGroups"
           v-model:selectedValue="state.fieldFilters.ageGroup"
         >
           <template #label>
@@ -49,7 +52,7 @@
           <div
             class=""
           >
-            <div v-for="service in state.uniqueServices" :key="service">
+            <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
               <input
                 class="mr-2"
                 type="checkbox"
@@ -66,10 +69,9 @@
       </div>
     </nav>
     <main class="inline lg:left-1/4 lg:w-3/4">
-      <p class="pt-6">
-        Browse autism resources across North Carolina compiled by the FACES team. Resources are organized by county and can be filtered on the general age range and the types of services provided. 
-      </p>
-      <div id="resource-list-header" class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
+      <p class="pt-6">Browse autism resources across North Carolina compiled by the FACES team.</p>
+      <p class="mt-4">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
+      <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
         <div class="md:hidden w-full flex flex-row items-baseline mb-2">
           <label class="mr-2" for="county">Go to resources for a specific county:</label>
           <select
@@ -80,7 +82,7 @@
           >
             <option selected disabled value="">Select a county</option>
             <option
-              v-for="county in state.uniqueCounties"
+              v-for="county in counties"
               :key="county"
               :value="county"
             >
@@ -92,44 +94,46 @@
             @click="toggleFilterMenuVisibility"
           >Filter resources</button>  
         </div>
-        <div class="w-full mt-2 pb-2">
-          <span class="mt-2">{{ filterText }}</span>
-          <button
-            class="font-semibold ml-2 text-fuchsia-600"
-            @click="removeAllFilters"
-            v-show="filterText !== DEFAULT_FILTER_TEXT"
-          >(Remove all filters)</button>
-        </div>
         <!-- <transition name="vert-slide">
           <FilterUI
             class="w-full absolute top-full flex flex-row items-start justify-around md:hidden overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
             v-if="state.showFilters"
             v-model:ageGroupFilter="state.fieldFilters.ageGroup"
             v-model:servicesGroupFilter="state.fieldFilters.services"
-            :uniqueAgeGroups="state.uniqueAgeGroups"
-            :uniqueServices="state.uniqueServices"
+            :uniqueAgeGroups="STATIC_DATA.uniqueAgeGroups"
+            :uniqueServices="STATIC_DATA.uniqueServices"
             @closeFilterMenu="state.showFilters = false"
           />
         </transition> -->
       </div>
       <div class="flex flex-col">
         <div
-          class=""
-          v-for="county in state.uniqueCounties.sort()"
+          v-for="county in counties.sort()"
           :key="county"
           :id="county"
         >
-          <h2 class="sticky pt-4 pb-1 text-gray-900 font-semibold bg-white border-b border-black" :style="stickyTopOffset">
+          <div class="sticky w-full px-2 text-gray-100 bg-gray-900 border-b border-black flex flex-wrap justify-between items-center" :style="stickyTopOffset">
+            <h2 class="font-semibold">
               {{ county }} County
-          </h2>
+            </h2>
+            <div class="flex flex-col items-end">
+              <span>Showing {{ filterByCounty(county).length }} of {{ STATIC_DATA.countyResourceCount[county] }} resources</span>
+              <button
+                class="font-semibold hover:text-purple-200"
+                @click="removeAllFilters"
+                v-show="dataIsFiltered"
+              >Remove all filters</button>
+            </div>
+          </div>
+          
           <ResourceListing
-            class="ml-4"
+            class="px-2"
             v-for="resource in filterByCounty(county)"
             :key="resource.id"
             :resource="resource"
           />
           <div v-show="filterByCounty(county).length === 0">
-            <p>
+            <p class="my-4">
               There are no resources in {{ county }} county that meet your filter criteria. Remove filters to view the resources in this county.
             </p>
           </div>
@@ -163,7 +167,14 @@ import { runOnResize } from './composables/handle-resize'
 import rawRepoData from './assets/data/MasterListRepository_12-10-21.csv'
 import { counties } from './assets/data/NC-counties.json'
 
-// Create reactive data
+// Static data
+const STATIC_DATA = {
+  uniqueAgeGroups: [],
+  uniqueServices: [],
+  countyResourceCount: {}
+}
+
+// Reactive data
 const state = reactive({
   // The full dataset for the repository
   fullRepoData: {},
@@ -175,26 +186,8 @@ const state = reactive({
     services: []
   },
   selectedCounty: { county: '' },
-  uniqueAgeGroups: [],
-  uniqueCounties: counties,
-  uniqueServices: [],
   showFilters: false,
   stickyTopOffset: 0
-})
-
-// Clean, reformat, and pass the CSV data into the reactive data store before the component is mounted
-onBeforeMount(() => {
-  // Clean the data
-  const cleanedRepoData = cleanRawFACESData(rawRepoData)
-
-  state.fullRepoData = cleanedRepoData.cleanData
-  state.filteredRepoData = cleanedRepoData.cleanData
-
-  state.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
-  state.uniqueServices = cleanedRepoData.uniqueServices
-
-  // Add window resize event listener to run sticky elements offset calculation when screen size changes
-  runOnResize(calculateStickyOffset)
 })
 
 // Calculate the offset for sticky elements (county labels and desktop nav)
@@ -210,6 +203,21 @@ const stickyTopOffset = computed(() => {
     }
 })
 
+// Clean, reformat, and pass the CSV data into the data stores before the component is mounted
+onBeforeMount(() => {
+  // Clean the data
+  const cleanedRepoData = cleanRawFACESData(rawRepoData)
+
+  state.fullRepoData = cleanedRepoData.cleanData
+  state.filteredRepoData = cleanedRepoData.cleanData
+
+  STATIC_DATA.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
+  STATIC_DATA.uniqueServices = cleanedRepoData.uniqueServices
+  STATIC_DATA.countyResourceCount = cleanedRepoData.totalResourcesByCounty
+
+  // Add window resize event listener to run sticky elements offset calculation when screen size changes
+  runOnResize(calculateStickyOffset)
+})
 
 onMounted(() => {
   // Set the initial offset for sticky elements (county labels and desktop nav)
@@ -222,22 +230,14 @@ watch(state.selectedCounty, (county) => {
   window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
 })
 
+const dataIsFiltered = computed(() => {
+  return state.fullRepoData.length !== state.filteredRepoData.length
+})
+
 // Toggle showing the filter menu
 const toggleFilterMenuVisibility = () => {
   state.showFilters = !state.showFilters
 }
-
-// The text to show when no filters are set
-const DEFAULT_FILTER_TEXT = 'Showing all resources'
-
-// Compose the text describing the current set filters
-const filterText = computed(() => {
-  // If no filters are set return boilerplate text
-  if (Object.values(state.fieldFilters).every(d => d.length === 0)) {
-    return DEFAULT_FILTER_TEXT
-  }
-  return 'Showing filtered resources'
-})
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
 const removeAllFilters = () => {
@@ -255,8 +255,8 @@ watch(state.fieldFilters, (filters) => {
   // If filter is set on age group, repo data on selected age range
   if (ageGroup.length > 0) {
     filteredData = filteredData.filter(resource => {
-      let [ageCat, ageNum] = ageGroup.split(' (')
-      console.log(resource['Age categories'], ageNum)
+      let [ageCat, ] = ageGroup.split(' (')
+      // console.log(resource['Age categories'], ageNum)
       if (resource['Age categories']) {
         return resource['Age categories'].toLowerCase()
           .includes(ageCat.toLowerCase())
@@ -266,7 +266,6 @@ watch(state.fieldFilters, (filters) => {
 
   // If filter is set on services, repo data on selected services
   if (services.length > 0) {
-    console.log(services)
     filteredData = filteredData.filter(resource => {
       return services.every(service => resource.services.includes(service))
     })

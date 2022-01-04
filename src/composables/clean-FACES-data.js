@@ -2,7 +2,7 @@
  * Clean the raw FACES resource repository data. Expects the general structure of the data contained in [Master List Repository](https://docs.google.com/spreadsheets/d/1NuGjSo7xwBRtCx_kCpoT2eb9BmEEkjkr/edit?usp=sharing&ouid=103668074026507033128&rtpof=true&sd=true).
  * 
  * @param {string: any} rawData An object containing the structured raw data to be cleaned
- * @returns {{cleanData: {}, uniqueAgeGroups: string[], uniqueServices: string[]}} An object containing the cleaned data and a list of the unique age groups and a list of the unique services contained in the cleaned data
+ * @returns {{cleanData: {}, uniqueAgeGroups: string[], uniqueServices: string[], totalResourcesByCounty: {string: number}}} An object containing the cleaned data and a list of the unique age groups and a list of the unique services contained in the cleaned data
  */
 export function cleanRawFACESData(rawData) {
   // Empty array to contain the primary unique services (services in dataset with specific header value (i.e., not included under "Other..."))
@@ -58,6 +58,7 @@ export function cleanRawFACESData(rawData) {
     return 0
   })
 
+  // Age ranges and category names from CDC (https://www.cdc.gov/ncbddd/childdevelopment/positiveparenting/index.html)
   const uniqueAgeGroups = [
     'Infants (0-1 year)',
     'Toddlers (1-3 years)',
@@ -68,9 +69,19 @@ export function cleanRawFACESData(rawData) {
     'Adults (21+ years)'
   ]
 
+  const totalResourcesByCounty = cleanData.reduce((prev, current) => {
+    if (Object.keys(prev).includes(current.County)) {
+      prev[current.County] += 1
+    } else {
+      prev[current.County] = 1
+    }
+    return prev
+  }, {})
+
   return {
     cleanData,
+    uniqueServices,
     uniqueAgeGroups,
-    uniqueServices
+    totalResourcesByCounty
   }
 }
