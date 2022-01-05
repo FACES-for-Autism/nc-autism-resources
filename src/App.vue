@@ -222,7 +222,6 @@ const dataIsFiltered = computed(() => {
 // Toggle showing the filter menu
 const toggleMenuVisibility = () => {
   state.showMenu = !state.showMenu
-  console.log(state.showMenu)
 }
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
