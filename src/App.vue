@@ -10,14 +10,23 @@
   </header>
   <div class="max-w-6xl mx-auto sm:px-4 md:px-8 xl:p-0 flex flex-row">
     <button 
+      aria-label="Open navigation menu"
       class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-900 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg v-show="!state.showMenu" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <svg v-show="state.showMenu" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
     </button>
     <transition name="slide">
       <nav
-        class="pointer-events-auto pt-6 pl-4 fixed bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:right-auto lg:h-screen lg:pl-0 lg:border-none bg-white"
+        class="pointer-events-auto py-6 pl-4 fixed bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:right-auto lg:h-screen lg:pl-0 lg:border-none bg-white"
         :style="stickyTopOffset"
         v-show="state.isDesktopDevice || state.showMenu"
       >
@@ -78,8 +87,8 @@
       </nav>
     </transition>
     <main class="inline w-full lg:left-1/4 lg:w-3/4">
-      <p class="pt-6">Browse autism resources across North Carolina compiled by the FACES team.</p>
-      <p class="mt-4">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
+      <p class="pt-6 px-2">Browse autism resources across North Carolina compiled by the FACES team.</p>
+      <p class="mt-4 px-2">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
       <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
       </div>
       <div class="flex flex-col">
@@ -118,7 +127,7 @@
     </main>
   <div 
     class="fixed w-screen h-screen left-0 overflow-hidden z-40 bg-gray-500 bg-opacity-60"
-    @click="state.showMenu = false"
+    @click="toggleMenuVisibility"
     v-show="!state.isDesktopDevice && state.showMenu"
   ></div>
   </div>
@@ -222,6 +231,11 @@ const dataIsFiltered = computed(() => {
 // Toggle showing the filter menu
 const toggleMenuVisibility = () => {
   state.showMenu = !state.showMenu
+  if (state.showMenu && !state.isDesktopDevice) {
+    document.querySelector('body').classList.add('overflow-y-hidden')
+  } else {
+    document.querySelector('body').classList.remove('overflow-y-hidden')
+  }
 }
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
