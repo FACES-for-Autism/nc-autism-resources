@@ -31,7 +31,7 @@
     <p v-if="valueIsDefined(resource['Age categories'])">{{ resource['Age categories'] }}</p>
     <p v-else>Not listed</p>
     <h4 class="font-semibold mt-4">Services</h4>
-    <ul class="grid md:grid-cols-2 md:pr-36 content-start list-inside list-disc">
+    <ul class="grid sm:grid-cols-2 md:pr-36 content-start list-inside list-disc">
       <li
         v-for="resource in resource.services"
         :key=resource

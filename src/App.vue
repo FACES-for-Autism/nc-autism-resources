@@ -9,102 +9,78 @@
     </div>
   </header>
   <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row">
-    <nav
-      class="hidden pt-6 lg:sticky lg:inline lg:h-screen lg:w-1/4 overflow-y-auto"
-      :style="stickyTopOffset"
+    <button 
+      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-900 text-white"
+      @click="toggleMenuVisibility"
     >
-      <SelectInput
-        class="flex flex-col w-11/12"
-        :groupName="'county'"
-        :values="counties"
-        v-model:selectedValue="state.selectedCounty.county"
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <transition name="slide">
+      <nav
+        class="pt-6 fixed h-screen z-50 lg:sticky lg:inline lg:w-1/4 lg:left-0 lg:right-auto overflow-y-auto bg-white"
+        :style="stickyTopOffset"
+        v-show="state.showMenu"
       >
-        <template #label>
-          Go to specific county:
-        </template>
-        <template #default-value>
-          Select a county
-        </template>
-      </SelectInput>
-      <div>
-        <h5 class="mt-8 font-semibold">Filter resources</h5>
         <SelectInput
           class="flex flex-col w-11/12"
-          :groupName="'ages'"
-          :values="STATIC_DATA.uniqueAgeGroups"
-          v-model:selectedValue="state.fieldFilters.ageGroup"
+          :groupName="'county'"
+          :values="counties"
+          v-model:selectedValue="state.selectedCounty.county"
         >
           <template #label>
-            Age range:
+            Go to specific county:
           </template>
           <template #default-value>
-            Select an age range
+            Select a county
           </template>
         </SelectInput>
-        <button
-          class="italic"
-          v-if="state.fieldFilters.ageGroup !== ''"
-          @click="state.fieldFilters.ageGroup = ''">
-          Remove age range filter
-        </button>
-        <fieldset class="mt-6">
-          <legend class="mb-2">Select services:</legend>
-          <div
-            class=""
+        <div>
+          <h5 class="mt-8 font-semibold">Filter resources</h5>
+          <SelectInput
+            class="flex flex-col w-11/12"
+            :groupName="'ages'"
+            :values="STATIC_DATA.uniqueAgeGroups"
+            v-model:selectedValue="state.fieldFilters.ageGroup"
           >
-            <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
-              <input
-                class="mr-2"
-                type="checkbox"
-                name="services"
-                :id="service"
-                :value="service"
-                v-model="state.fieldFilters.services"
-                @change="serviceSelected"
-              >
-              <label :for="service">{{ service }}</label>
+            <template #label>
+              Age range:
+            </template>
+            <template #default-value>
+              Select an age range
+            </template>
+          </SelectInput>
+          <button
+            class="italic"
+            v-if="state.fieldFilters.ageGroup !== ''"
+            @click="state.fieldFilters.ageGroup = ''">
+            Remove age range filter
+          </button>
+          <fieldset class="mt-6">
+            <legend class="mb-2">Select services:</legend>
+            <div
+              class=""
+            >
+              <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
+                <input
+                  class="mr-2"
+                  type="checkbox"
+                  name="services"
+                  :id="service"
+                  :value="service"
+                  v-model="state.fieldFilters.services"
+                  @change="serviceSelected"
+                >
+                <label :for="service">{{ service }}</label>
+              </div>
             </div>
-          </div>
-        </fieldset>
-      </div>
-    </nav>
-    <main class="inline lg:left-1/4 lg:w-3/4">
+          </fieldset>
+        </div>
+      </nav>
+    </transition>
+    <main class="inline w-full lg:left-1/4 lg:w-3/4">
       <p class="pt-6">Browse autism resources across North Carolina compiled by the FACES team.</p>
       <p class="mt-4">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
       <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
-        <div class="md:hidden w-full flex flex-row items-baseline mb-2">
-          <label class="mr-2" for="county">Go to resources for a specific county:</label>
-          <select
-            class="w-min cursor-pointer border-2 border-gray-500 rounded-sm"
-            @change="goToCountyListing"
-            name="county_filter"
-            id="county"
-          >
-            <option selected disabled value="">Select a county</option>
-            <option
-              v-for="county in counties"
-              :key="county"
-              :value="county"
-            >
-              {{ county }}
-            </option>
-          </select>
-          <button
-          class="md:hidden ml-auto font-semibold"
-            @click="toggleFilterMenuVisibility"
-          >Filter resources</button>  
-        </div>
-        <!-- <transition name="vert-slide">
-          <FilterUI
-            class="w-full absolute top-full flex flex-row items-start justify-around md:hidden overflow-hidden bg-white border-2 border-t-0 border-gray-600 rounded-lg rounded-t-none"
-            v-if="state.showFilters"
-            v-model:ageGroupFilter="state.fieldFilters.ageGroup"
-            v-model:servicesGroupFilter="state.fieldFilters.services"
-            :uniqueAgeGroups="STATIC_DATA.uniqueAgeGroups"
-            :uniqueServices="STATIC_DATA.uniqueServices"
-            @closeFilterMenu="state.showFilters = false"
-          />
-        </transition> -->
       </div>
       <div class="flex flex-col">
         <div
@@ -186,7 +162,7 @@ const state = reactive({
     services: []
   },
   selectedCounty: { county: '' },
-  showFilters: false,
+  showMenu: false,
   stickyTopOffset: 0
 })
 
@@ -235,8 +211,9 @@ const dataIsFiltered = computed(() => {
 })
 
 // Toggle showing the filter menu
-const toggleFilterMenuVisibility = () => {
-  state.showFilters = !state.showFilters
+const toggleMenuVisibility = () => {
+  state.showMenu = !state.showMenu
+  console.log(state.showMenu)
 }
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
@@ -288,18 +265,16 @@ const filterByCounty = (county) => {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.vert-slide-enter-active,
-.vert-slide-leave-active {
-  transition-property: all;
+.slide-enter-active,
+.slide-leave-active {
+  transition-property: transform;
   transition-duration: 0.3s;
   transition-timing-function: ease-in;
-  max-height: 200px;
+  transform: translateX(0);
 }
 
-.vert-slide-enter-from,
-.vert-slide-leave-to {
-  /* transform: translateY(-100%); */
-  display: inline;
-  max-height: 0;
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-100%);
 }
 </style>
