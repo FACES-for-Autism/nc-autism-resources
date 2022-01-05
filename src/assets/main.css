@@ -2,22 +2,40 @@
 
 @layer base {
   h1 {
-    @apply text-4xl mt-4 mb-3;
+    @apply text-3xl mt-4 mb-3;
   }
   h2 {
-    @apply text-3xl mt-3 mb-2;
+    @apply text-2xl mt-3 mb-2;
   }
   h3 {
-    @apply text-2xl mt-2 mb-1;
-  }
-  h4 {
     @apply text-xl mt-2 mb-1;
   }
-  h5 {
+  h4 {
     @apply text-lg mt-2 mb-1;
+  }
+  h5 {
+    @apply text-base mt-2 mb-1;
   }
   a {
     @apply text-blue-600 underline;
+  }
+
+  @screen md {
+    h1 {
+      @apply text-4xl mt-4 mb-3;
+    }
+    h2 {
+      @apply text-3xl mt-3 mb-2;
+    }
+    h3 {
+      @apply text-2xl mt-2 mb-1;
+    }
+    h4 {
+      @apply text-xl mt-2 mb-1;
+    }
+    h5 {
+      @apply text-lg mt-2 mb-1;
+    }
   }
 }
 

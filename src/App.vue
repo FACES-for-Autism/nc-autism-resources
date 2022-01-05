@@ -4,22 +4,22 @@
       <a class="w-32 md:w-16" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
         <img class="object-contain" src="@/assets/faces-logo.png" alt="FACES program logo">
       </a>
-      <h1 class="text-2xl md:text-4xl ml-4 font-bold">FACES Resources Repository</h1>
+      <h1 class="ml-4 font-bold">FACES Resources Repository</h1>
       <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </div>
   </header>
-  <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row">
+  <div class="max-w-6xl mx-auto sm:px-4 md:px-8 xl:p-0 flex flex-row">
     <button 
-      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-900 text-white"
+      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-900 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
     <transition name="slide">
       <nav
-        class="pt-6 fixed h-screen z-50 lg:sticky lg:inline lg:w-1/4 lg:left-0 lg:right-auto overflow-y-auto bg-white"
+        class="pointer-events-auto pt-6 pl-4 fixed bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:right-auto lg:h-screen lg:pl-0 lg:border-none bg-white"
         :style="stickyTopOffset"
-        v-show="state.showMenu"
+        v-show="state.isDesktopDevice || state.showMenu"
       >
         <SelectInput
           class="flex flex-col w-11/12"
@@ -55,14 +55,14 @@
             @click="state.fieldFilters.ageGroup = ''">
             Remove age range filter
           </button>
-          <fieldset class="mt-6">
+          <fieldset class="my-6">
             <legend class="mb-2">Select services:</legend>
             <div
               class=""
             >
               <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
                 <input
-                  class="mr-2"
+                  class="mr-2 cursor-pointer"
                   type="checkbox"
                   name="services"
                   :id="service"
@@ -70,7 +70,7 @@
                   v-model="state.fieldFilters.services"
                   @change="serviceSelected"
                 >
-                <label :for="service">{{ service }}</label>
+                <label class="cursor-pointer" :for="service">{{ service }}</label>
               </div>
             </div>
           </fieldset>
@@ -116,13 +116,11 @@
         </div>
       </div>
     </main>
-    <!-- <footer class="col-start-4 col-span-9">
-      <h2>Full data table (for testing)</h2>
-      <TheDataTable
-        :allRepoData="state.fullRepoData"
-        :filteredRepoDataIDs="state.filteredRepoData.map(d => d.id)"
-      />
-    </footer> -->
+  <div 
+    class="fixed w-screen h-screen left-0 overflow-hidden z-40 bg-gray-500 bg-opacity-60"
+    @click="state.showMenu = false"
+    v-show="!state.isDesktopDevice && state.showMenu"
+  ></div>
   </div>
 </template>
 
@@ -163,16 +161,25 @@ const state = reactive({
   },
   selectedCounty: { county: '' },
   showMenu: false,
-  stickyTopOffset: 0
+  stickyTopOffset: 0,
+  isDesktopDevice: false
 })
 
 // Calculate the offset for sticky elements (county labels and desktop nav)
-const calculateStickyOffset = () => {
+const setWidthDependentElements = () => {
+  // Calculate the offset for sticky elements (county labels and desktop nav)
   const headerElement = document.querySelector('header')
   state.stickyTopOffset = headerElement.getBoundingClientRect().height
+
+  // Prevent nav menu from being hidden on desktop devices
+  if (window.innerWidth >= 1024) {
+    state.isDesktopDevice = true
+  } else {
+    state.isDesktopDevice = false
+  }
 }
 
-// Use computed property to set new offset on "stickyTopOffset" value change
+// Use computed property to set new "top" style value when "stickyTopOffset" value changes
 const stickyTopOffset = computed(() => {
     return {
       top: state.stickyTopOffset + 'px'
@@ -191,13 +198,15 @@ onBeforeMount(() => {
   STATIC_DATA.uniqueServices = cleanedRepoData.uniqueServices
   STATIC_DATA.countyResourceCount = cleanedRepoData.totalResourcesByCounty
 
-  // Add window resize event listener to run sticky elements offset calculation when screen size changes
-  runOnResize(calculateStickyOffset)
+  // Add window resize event listener to run methods when screen size changes
+  runOnResize(() => {
+    setWidthDependentElements()
+  })
 })
 
 onMounted(() => {
   // Set the initial offset for sticky elements (county labels and desktop nav)
-  calculateStickyOffset()
+  setWidthDependentElements()
 })
 
 // Scroll to the selected county section when county selector is updated
