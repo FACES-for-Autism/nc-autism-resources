@@ -15,12 +15,12 @@
       class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-600 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
-      <svg v-show="!state.showMenu" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg v-show="!state.navIsVisible" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
-      <svg v-show="state.showMenu" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg v-show="state.navIsVisible" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -28,7 +28,7 @@
     <nav
       class="py-6 pl-4 fixed w-8/12 sm:w-2/5 md:1/4 bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white"
       :style="stickyTopOffset"
-      v-show="state.isDesktopDevice || state.showMenu"
+      v-show="state.isDesktopDevice || state.navIsVisible"
     >
       <SelectInput
         class="flex flex-col w-11/12 xl:w-10/12"
@@ -128,7 +128,7 @@
   <div 
     class="fixed w-screen h-screen left-0 overflow-hidden z-40 bg-gray-500 bg-opacity-60"
     @click="toggleMenuVisibility"
-    v-show="!state.isDesktopDevice && state.showMenu"
+    v-show="!state.isDesktopDevice && state.navIsVisible"
   ></div>
   </div>
 </template>
@@ -169,7 +169,7 @@ const state = reactive({
     services: []
   },
   selectedCounty: { county: '' },
-  showMenu: false,
+  navIsVisible: false,
   stickyTopOffset: 0,
   isDesktopDevice: false
 })
@@ -210,7 +210,9 @@ onBeforeMount(() => {
   // Add window resize event listener to run methods when screen size changes
   runOnResize(() => {
     setWidthDependentElements()
-    toggleMenuVisibility()
+    if (state.navIsVisible && state.isDesktopDevice) {
+      toggleMenuVisibility()
+    }
   })
 })
 
@@ -231,8 +233,8 @@ const dataIsFiltered = computed(() => {
 
 // Toggle showing the filter menu
 const toggleMenuVisibility = () => {
-  state.showMenu = !state.showMenu
-  if (state.showMenu && !state.isDesktopDevice) {
+  state.navIsVisible = !state.navIsVisible
+  if (state.navIsVisible && !state.isDesktopDevice) {
     document.querySelector('body').classList.add('overflow-y-hidden')
   } else {
     document.querySelector('body').classList.remove('overflow-y-hidden')
