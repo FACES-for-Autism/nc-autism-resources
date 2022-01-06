@@ -26,12 +26,12 @@
       </svg>
     </button>
     <nav
-      class="pointer-events-auto py-6 pl-4 fixed bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:right-auto lg:h-screen lg:pl-0 lg:border-none bg-white"
+      class="py-6 pl-4 fixed w-8/12 sm:w-2/5 md:1/4 bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white"
       :style="stickyTopOffset"
       v-show="state.isDesktopDevice || state.showMenu"
     >
       <SelectInput
-        class="flex flex-col w-11/12"
+        class="flex flex-col w-11/12 xl:w-10/12"
         :groupName="'county'"
         :values="counties"
         v-model:selectedValue="state.selectedCounty.county"
@@ -46,7 +46,7 @@
       <div>
         <h5 class="mt-8 font-semibold">Filter resources</h5>
         <SelectInput
-          class="flex flex-col w-11/12"
+          class="flex flex-col w-11/12 xl:w-10/12"
           :groupName="'ages'"
           :values="STATIC_DATA.uniqueAgeGroups"
           v-model:selectedValue="state.fieldFilters.ageGroup"
@@ -210,6 +210,7 @@ onBeforeMount(() => {
   // Add window resize event listener to run methods when screen size changes
   runOnResize(() => {
     setWidthDependentElements()
+    toggleMenuVisibility()
   })
 })
 
