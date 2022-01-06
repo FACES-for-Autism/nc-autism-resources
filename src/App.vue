@@ -1,17 +1,18 @@
 <template>
   <header class="sticky top-0 z-20 w-screen border-b border-black bg-white">
     <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row items-center">
-      <a class="w-32 md:w-16" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
-        <img class="object-contain" src="@/assets/faces-logo.png" alt="FACES program logo">
+      <a class="" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
+        <img class="object-contain" width="75" height="60" src="@/assets/faces-logo.png" alt="FACES program logo">
       </a>
-      <h1 class="ml-4 font-bold">FACES Resources Repository</h1>
-      <a class="ml-auto" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
+      <h1 class="ml-4">Autism Resources Repository</h1>
+      <a class="ml-auto lg:hidden" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
+      <a class="ml-auto hidden lg:inline" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
     </div>
   </header>
   <div class="max-w-6xl mx-auto sm:px-4 md:px-8 xl:p-0 flex flex-row">
     <button 
       aria-label="Open navigation menu"
-      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-900 text-white cursor-pointer"
+      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-600 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
       <svg v-show="!state.showMenu" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -24,71 +25,70 @@
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
     </button>
-    <transition name="slide">
-      <nav
-        class="pointer-events-auto py-6 pl-4 fixed bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:right-auto lg:h-screen lg:pl-0 lg:border-none bg-white"
-        :style="stickyTopOffset"
-        v-show="state.isDesktopDevice || state.showMenu"
+    <nav
+      class="pointer-events-auto py-6 pl-4 fixed bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:right-auto lg:h-screen lg:pl-0 lg:border-none bg-white"
+      :style="stickyTopOffset"
+      v-show="state.isDesktopDevice || state.showMenu"
+    >
+      <SelectInput
+        class="flex flex-col w-11/12"
+        :groupName="'county'"
+        :values="counties"
+        v-model:selectedValue="state.selectedCounty.county"
       >
+        <template #label>
+          Go to specific county:
+        </template>
+        <template #default-value>
+          Select a county
+        </template>
+      </SelectInput>
+      <div>
+        <h5 class="mt-8 font-semibold">Filter resources</h5>
         <SelectInput
           class="flex flex-col w-11/12"
-          :groupName="'county'"
-          :values="counties"
-          v-model:selectedValue="state.selectedCounty.county"
+          :groupName="'ages'"
+          :values="STATIC_DATA.uniqueAgeGroups"
+          v-model:selectedValue="state.fieldFilters.ageGroup"
         >
           <template #label>
-            Go to specific county:
+            Age range:
           </template>
           <template #default-value>
-            Select a county
+            Select an age range
           </template>
         </SelectInput>
-        <div>
-          <h5 class="mt-8 font-semibold">Filter resources</h5>
-          <SelectInput
-            class="flex flex-col w-11/12"
-            :groupName="'ages'"
-            :values="STATIC_DATA.uniqueAgeGroups"
-            v-model:selectedValue="state.fieldFilters.ageGroup"
+        <button
+          class="italic"
+          v-if="state.fieldFilters.ageGroup !== ''"
+          @click="state.fieldFilters.ageGroup = ''">
+          Remove age range filter
+        </button>
+        <fieldset class="my-6">
+          <legend class="mb-2">Select services:</legend>
+          <div
+            class=""
           >
-            <template #label>
-              Age range:
-            </template>
-            <template #default-value>
-              Select an age range
-            </template>
-          </SelectInput>
-          <button
-            class="italic"
-            v-if="state.fieldFilters.ageGroup !== ''"
-            @click="state.fieldFilters.ageGroup = ''">
-            Remove age range filter
-          </button>
-          <fieldset class="my-6">
-            <legend class="mb-2">Select services:</legend>
-            <div
-              class=""
-            >
-              <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
-                <input
-                  class="mr-2 cursor-pointer"
-                  type="checkbox"
-                  name="services"
-                  :id="service"
-                  :value="service"
-                  v-model="state.fieldFilters.services"
-                  @change="serviceSelected"
-                >
-                <label class="cursor-pointer" :for="service">{{ service }}</label>
-              </div>
+            <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
+              <input
+                class="mr-2 cursor-pointer"
+                type="checkbox"
+                name="services"
+                :id="service"
+                :value="service"
+                v-model="state.fieldFilters.services"
+                @change="serviceSelected"
+              >
+              <label class="cursor-pointer" :for="service">{{ service }}</label>
             </div>
-          </fieldset>
-        </div>
-      </nav>
-    </transition>
+          </div>
+        </fieldset>
+      </div>
+    </nav>
     <main class="inline w-full lg:left-1/4 lg:w-3/4">
-      <p class="pt-6 px-2">Browse autism resources across North Carolina compiled by the FACES team.</p>
-      <p class="mt-4 px-2">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
+      <h2 class="pt-4 px-2 font-semibold">About</h2>
+      <p class="mt-4 px-2">Browse autism resources across North Carolina compiled by the FACES team.</p>
+      <p class="my-4 px-2">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
       <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
       </div>
       <div class="flex flex-col">
@@ -97,22 +97,22 @@
           :key="county"
           :id="county"
         >
-          <div class="sticky w-full px-2 text-gray-100 bg-gray-900 border-b border-black flex flex-wrap justify-between items-center" :style="stickyTopOffset">
-            <h2 class="font-semibold">
+          <div class="sticky w-full px-2 text-gray-900 bg-gray-100 border-b border-gray-200 flex flex-wrap justify-between items-baseline sm:items-center" :style="stickyTopOffset">
+            <h2 class="mr-2 sm:mr-0 font-semibold">
               {{ county }} County
             </h2>
-            <div class="flex flex-col items-end">
-              <span>Showing {{ filterByCounty(county).length }} of {{ STATIC_DATA.countyResourceCount[county] }} resources</span>
+            <div class="flex flex-row sm:flex-col items-end mb-2 sm:mb-0">
+              <span>{{ filterByCounty(county).length }} of {{ STATIC_DATA.countyResourceCount[county] }} resources</span>
               <button
-                class="font-semibold hover:text-purple-200"
+                class="ml-2 sm:ml-0 font-semibold hover:text-blue-400"
                 @click="removeAllFilters"
                 v-show="dataIsFiltered"
-              >Remove all filters</button>
+              >Remove filters</button>
             </div>
           </div>
           
           <ResourceListing
-            class="px-2"
+            class="px-2 pb-8 border-b border-gray-200"
             v-for="resource in filterByCounty(county)"
             :key="resource.id"
             :resource="resource"
@@ -285,18 +285,5 @@ const filterByCounty = (county) => {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition-property: transform;
-  transition-duration: 0.3s;
-  transition-timing-function: ease-in;
-  transform: translateX(0);
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(-100%);
 }
 </style>

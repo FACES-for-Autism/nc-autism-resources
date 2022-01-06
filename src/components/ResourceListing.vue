@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col mb-4">
+  <div class="flex flex-col">
     <div class="w-full mt-4">
       <h3 class="inline font-semibold">{{ resource.Name }}</h3>
       <span v-if="valueIsDefined(resource['Web Address'])" class="inline text-xl">
