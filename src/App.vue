@@ -8,7 +8,7 @@
         <a class="ml-auto sm:hidden font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
       </div>
       
-      <h1 class="sm:ml-4 text-white">Autism Resources Repository</h1>
+      <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">Autism Resources Repository</h1>
       <a class="w-min ml-auto hidden sm:block font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
     </div>
   </header>
@@ -107,31 +107,14 @@
           :key="county"
           :id="county"
         >
-          <div class="sticky w-full px-2 text-gray-900 bg-gray-100 border-b border-gray-200 flex flex-wrap justify-between items-baseline sm:items-center" :style="stickyTopOffset">
-            <h2 class="mr-2 sm:mr-0 font-semibold">
-              {{ county }} County
-            </h2>
-            <div class="flex flex-row sm:flex-col items-end mb-2 sm:mb-0">
-              <span>Showing {{ filterByCounty(county).length }} of {{ STATIC_DATA.countyResourceCount[county] }} resources</span>
-              <button
-                class="ml-2 sm:ml-0 font-semibold hover:text-red-400"
-                @click="removeAllFilters"
-                v-show="dataIsFiltered"
-              >Remove filters</button>
-            </div>
-          </div>
-          
-          <ResourceListing
-            class="px-2 pb-8 border-b border-gray-200"
-            v-for="resource in filterByCounty(county)"
-            :key="resource.id"
-            :resource="resource"
+          <CountyResourcesList
+            :countyName="county"
+            :resourceCount="STATIC_DATA.countyResourceCount"
+            :filteredRepoData="state.filteredRepoData"
+            :fullRepoDataLength="STATIC_DATA.fullRepoData.length"
+            :countyHeaderOffset="state.stickyTopOffset"
+            @removeAllFilters="removeAllFilters"
           />
-          <div v-show="filterByCounty(county).length === 0">
-            <p class="my-4">
-              There are no resources in {{ county }} county that meet your filter criteria. Remove filters to view the resources in this county.
-            </p>
-          </div>
         </div>
       </div>
     </main>
@@ -148,7 +131,7 @@ import { reactive, watch, onBeforeMount, computed, onMounted } from 'vue'
 
 // Import child components
 // import FilterUI from './components/FilterUI.vue'
-import ResourceListing from './components/ResourceListing.vue'
+import CountyResourcesList from './components/CountyResourcesList.vue'
 import SelectInput from './components/SelectInput.vue'
 
 
@@ -162,6 +145,7 @@ import { counties } from './assets/data/NC-counties.json'
 
 // Static data
 const STATIC_DATA = {
+  fullRepoData: {},
   uniqueAgeGroups: [],
   uniqueServices: [],
   countyResourceCount: {}
@@ -169,8 +153,6 @@ const STATIC_DATA = {
 
 // Reactive data
 const state = reactive({
-  // The full dataset for the repository
-  fullRepoData: {},
   // The filtered dataset for display in the application
   filteredRepoData: {},
   // The field values used to filter the dataset
@@ -210,7 +192,7 @@ onBeforeMount(() => {
   // Clean the data
   const cleanedRepoData = cleanRawFACESData(rawRepoData)
 
-  state.fullRepoData = cleanedRepoData.cleanData
+  STATIC_DATA.fullRepoData = cleanedRepoData.cleanData
   state.filteredRepoData = cleanedRepoData.cleanData
 
   STATIC_DATA.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
@@ -237,10 +219,6 @@ watch(state.selectedCounty, (county) => {
   window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
 })
 
-const dataIsFiltered = computed(() => {
-  return state.fullRepoData.length !== state.filteredRepoData.length
-})
-
 // Toggle showing the filter menu
 const toggleMenuVisibility = () => {
   state.navIsVisible = !state.navIsVisible
@@ -262,7 +240,7 @@ watch(state.fieldFilters, (filters) => {
   // The filter fields
   const {ageGroup, services} = filters
   // The base filtered data, we will sequentially update this object by passing it through each filter
-  let filteredData = state.fullRepoData
+  let filteredData = STATIC_DATA.fullRepoData
 
   // If filter is set on age group, repo data on selected age range
   if (ageGroup.length > 0) {
@@ -286,11 +264,6 @@ watch(state.fieldFilters, (filters) => {
   // Update reactive filtered repo data with final filtered data
   state.filteredRepoData = filteredData
 })
-
-// Filter resources by county to update the resource listing section
-const filterByCounty = (county) => {
-  return state.filteredRepoData.filter(d => d.County.includes(county))
-}
 </script>
 
 <style>
