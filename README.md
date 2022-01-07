@@ -6,17 +6,17 @@ The [FACES (Fostering Advocacy, Communication, Empowerment, and Support) program
 
 ## Components
 
-### ResourceCard.vue
+### ResourceListing.vue
 
-This component provides a view of the data fields for a resource.
+This component provides a formatted view of the data fields for a resource.
 
-### SearchForm.vue
+### SelectInput.vue
 
-This component contains the UI elements for filtering the repository
+This component provides a base configuration for a select element (and label) with two-way data binding.
 
 ### TheDataTable.vue
 
-This component provides a simple table view of the data loaded into the application. Currently this component is only relevant for testing purposes.
+This component provides a simple table view of the data loaded into the application. This component is only relevant for testing purposes.
 
 ## Project setup
 
@@ -40,6 +40,14 @@ npm run build
 
 ```bash
 npm run lint
+```
+
+### Builds and deploys to GitHub Pages
+
+*Note: deployment is specific to repository referenced in `deploy.sh` script. See the Vue CLI reference for [deploying to GitHub Pages](https://cli.vuejs.org/guide/deployment.html#github-pages)*
+
+```bash
+npm run deploy
 ```
 
 ### Customize configuration
