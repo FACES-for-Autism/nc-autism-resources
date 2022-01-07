@@ -33,6 +33,7 @@
       :style="stickyTopOffset"
       v-show="state.isDesktopDevice || state.navIsVisible"
     >
+      <h4 class="font-semibold">Select county</h4>
       <SelectInput
         class="flex flex-col w-11/12 xl:w-10/12"
         :groupName="'county'"
@@ -40,14 +41,14 @@
         v-model:selectedValue="state.selectedCounty.county"
       >
         <template #label>
-          Go to specific county:
+          Go to resources for a county:
         </template>
         <template #default-value>
           Select a county
         </template>
       </SelectInput>
       <div>
-        <h5 class="mt-8 font-semibold">Filter resources</h5>
+        <h4 class="mt-8 font-semibold">Filter resources</h4>
         <SelectInput
           class="flex flex-col w-11/12 xl:w-10/12"
           :groupName="'ages'"
@@ -90,8 +91,8 @@
     </nav>
     <main class="inline w-full lg:left-1/4 lg:w-3/4">
       <h2 class="pt-4 px-2 font-semibold">About</h2>
-      <p class="mt-4 px-2">Browse autism resources across North Carolina compiled by the FACES team.</p>
-      <p class="my-4 px-2">Resources are organized alphabetically by county. Use the filters to limit resource listings to specific criteria.</p>
+      <p class="mt-4 px-2">Browse autism resources available in North Carolina compiled by the FACES (Fostering Advocacy, Communication, Empowerment, and Support) program. The FACES program is an advocacy and empowerment program for black families raising autistic children based in the NC State University College of Education.</p>
+      <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county and filter resources based on specific criteria.</p>
       <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
       </div>
       <div class="flex flex-col">
@@ -105,9 +106,9 @@
               {{ county }} County
             </h2>
             <div class="flex flex-row sm:flex-col items-end mb-2 sm:mb-0">
-              <span>{{ filterByCounty(county).length }} of {{ STATIC_DATA.countyResourceCount[county] }} resources</span>
+              <span>Showing {{ filterByCounty(county).length }} of {{ STATIC_DATA.countyResourceCount[county] }} resources</span>
               <button
-                class="ml-2 sm:ml-0 font-semibold hover:text-blue-400"
+                class="ml-2 sm:ml-0 font-semibold hover:text-red-400"
                 @click="removeAllFilters"
                 v-show="dataIsFiltered"
               >Remove filters</button>
