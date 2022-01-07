@@ -1,18 +1,21 @@
 <template>
-  <header class="sticky top-0 z-20 w-screen border-b border-black bg-white">
-    <div class="max-w-6xl mx-auto px-4 md:px-8 xl:p-0 flex flex-row items-center">
-      <a class="" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
-        <img class="object-contain" width="75" height="60" src="@/assets/faces-logo.png" alt="FACES program logo">
-      </a>
-      <h1 class="ml-4">Autism Resources Repository</h1>
-      <a class="ml-auto lg:hidden" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
-      <a class="ml-auto hidden lg:inline" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact the FACES team</a>
+  <header class="sticky top-0 z-20 w-screen border-b border-black bg-gray-800">
+    <div class="max-w-6xl mx-auto px-2 pt-2 sm:pt-0 sm:px-4 md:px-8 xl:p-0 flex flex-row flex-wrap items-center">
+      <div class="flex flex-row items-center w-full sm:w-max">
+        <a class="" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
+          <img class="object-contain" width="75" src="@/assets/faces-logo.png" alt="FACES program logo">
+        </a>
+        <a class="ml-auto sm:hidden font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
+      </div>
+      
+      <h1 class="sm:ml-4 text-white">Autism Resources Repository</h1>
+      <a class="w-min ml-auto hidden sm:block font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
     </div>
   </header>
   <div class="max-w-6xl mx-auto sm:px-4 md:px-8 xl:p-0 flex flex-row">
     <button 
       aria-label="Open navigation menu"
-      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-600 text-white cursor-pointer"
+      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-800 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
       <svg v-show="!state.navIsVisible" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -26,7 +29,7 @@
       </svg>
     </button>
     <nav
-      class="py-6 pl-4 fixed w-8/12 sm:w-2/5 md:1/4 bottom-0 left-0 z-50 border-r border-black overflow-y-scroll lg:sticky lg:inline lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white"
+      class="py-6 pl-4 fixed w-8/12 bottom-0 left-0 z-50 border-r border-black sm:w-2/5 md:w-4/12 lg:sticky lg:inline lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white overflow-y-scroll"
       :style="stickyTopOffset"
       v-show="state.isDesktopDevice || state.navIsVisible"
     >
@@ -125,11 +128,11 @@
         </div>
       </div>
     </main>
-  <div 
-    class="fixed w-screen h-screen left-0 overflow-hidden z-40 bg-gray-500 bg-opacity-60"
-    @click="toggleMenuVisibility"
-    v-show="!state.isDesktopDevice && state.navIsVisible"
-  ></div>
+    <div 
+      class="fixed w-screen h-screen left-0 overflow-hidden z-40 bg-gray-500 bg-opacity-60"
+      @click="toggleMenuVisibility"
+      v-show="!state.isDesktopDevice && state.navIsVisible"
+    ></div>
   </div>
 </template>
 

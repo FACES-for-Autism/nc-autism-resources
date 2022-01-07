@@ -23,7 +23,7 @@
       Address: 
       <template v-if="valueIsDefined(resource['Physical Address'])"> 
         <span class="inline">{{ resource['Physical Address'] }}</span>
-        <span class="inline"> (<a href="#">Open in map</a>)</span>
+        <span class="inline"> (<a :href="googleMapsURL">Open in map</a>)</span>
       </template>
       <span v-else>Not listed</span>
     </address>
@@ -42,12 +42,20 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 /* global defineProps */
-defineProps({
+const props = defineProps({
   resource: {
     type: Object,
     required: true
   }
+})
+
+const googleMapsURL = computed(() => {
+  return 'https://www.google.com/maps/search/?api=1&query=' +
+    props.resource['Physical Address'].replaceAll(' ', '+')
+      .replaceAll(',', '%2C')
 })
 
 // Test if there is a defined value in the resource field, used to conditionally render (v-if) resource information only if there is a value. This prevents empty HTML tags.
