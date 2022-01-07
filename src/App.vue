@@ -63,12 +63,12 @@
           </template>
         </SelectInput>
         <button
-          class="italic"
+          class="mt-2 italic hover:text-red-400"
           v-if="state.fieldFilters.ageGroup !== ''"
           @click="state.fieldFilters.ageGroup = ''">
           Remove age range filter
         </button>
-        <fieldset class="my-6">
+        <fieldset class="mt-4">
           <legend class="mb-2">Select services:</legend>
           <div
             class=""
@@ -87,6 +87,12 @@
             </div>
           </div>
         </fieldset>
+        <button
+          class="mt-2 italic hover:text-red-400"
+          v-if="state.fieldFilters.services.length > 0"
+          @click="state.fieldFilters.services = []">
+          Remove services filter
+        </button>
       </div>
     </nav>
     <main class="inline w-full lg:left-1/4 lg:w-3/4">
