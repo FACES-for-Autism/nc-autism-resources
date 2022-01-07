@@ -19,7 +19,7 @@
     :resource="resource"
   />
   <div v-show="filterByCounty(countyName).length === 0">
-    <p class="my-4">
+    <p class="px-2 my-4">
       There are no resources in {{ countyName }} county that meet your filter criteria. Remove filters to view the resources in this county.
     </p>
   </div>
