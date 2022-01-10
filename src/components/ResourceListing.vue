@@ -8,16 +8,17 @@
     </div>
     <h4 class="font-semibold mt-4">Contact information</h4>
     <address class="not-italic">
-      Email: <a
-        v-if="valueIsDefined(resource['Email Address']) && resource['Email Address'].toLowerCase() !== 'n/a'"
+      Email: <span
+        v-if="valueIsDefined(resource['Email Address']) && isValidEmail(resource['Email Address'])"
         :href="'mailto:' + resource['Email Address']"
-      >{{ resource['Email Address'] }}</a>
+        v-html="emailLinks"
+      ></span>
       <span v-else>Not listed</span>
       <br>
-      Phone: <a
-        v-if="valueIsDefined(resource['Phone Number']) && resource['Phone Number'].toLowerCase() !== 'n/a'"
-        :href="'tel:+1-' + resource['Phone Number']"
-      >{{ resource['Phone Number'] }}</a>
+      Phone: <span
+        v-if="valueIsDefined(resource['Phone Number']) && isValidPhoneNumber(resource['Phone Number'])"
+        v-html="phoneNumberLinks"
+      ></span>
       <span v-else>Not listed</span>
       <br>
       Address: 
@@ -52,18 +53,68 @@ const props = defineProps({
   }
 })
 
-const googleMapsURL = computed(() => {
-  return 'https://www.google.com/maps/search/?api=1&query=' +
-    props.resource['Physical Address'].replaceAll(' ', '+')
-      .replaceAll(',', '%2C')
+const emailLinks = computed(() => {
+  const emails = props.resource['Email Address'].split(/,\s*/gm)
+  const emailLinks = emails.map(email => {
+    return `<a href="mailto:${email}">${email}</a>`
+  })
+  return emailLinks.join(', ')
 })
 
-// Test if there is a defined value in the resource field, used to conditionally render (v-if) resource information only if there is a value. This prevents empty HTML tags.
+// Computed property that formats phone number links and returns an HTML string. Allows the listing to handle multiple phone number listings
+const phoneNumberLinks = computed(() => {
+  const re = /\d{3}-\d{3}-\d{4}/g
+  const numbers = props.resource['Phone Number'].match(re)
+  const numberLinks = numbers.map(number => {
+    return `<a href="tel:+1-${number}">${number}</a>`
+  })
+  return numberLinks.join(', ')
+})
+
+// Computed property that formats the correct url to send to Google Maps
+const googleMapsURL = computed(() => {
+  return 'https://www.google.com/maps/search/?api=1&query=' +
+    props.resource['Physical Address']
+      .replaceAll(' ', '+')
+      .replaceAll(',', '%2C')
+      .replaceAll('(', '%28')
+      .replaceAll(')', '%29')
+})
+
+/**
+ * Test if an expected string is defined (not null and not empty string)
+ * 
+ * @param {string} value The string to test
+ * @returns {boolean} True if the string is defined, false if not
+ */
 const valueIsDefined = (value) => {
   if (value != null && value.length > 0) {
     return true
   }
   return false
+}
+
+/**
+ * Test if a provided string matches the basic format of an email address.
+ * 
+ * @param {string} email The string to test
+ * @returns {boolean} True if the string looks like an email, false if not
+ */
+const isValidEmail = (email) => {
+  const re = /\S+@\S+\.\S+/
+  return re.test(email)
+}
+
+
+/**
+ * Test if a provided string matches the basic format of a phone number.
+ * 
+ * @param {string} number The number to test
+ * @returns {boolean} True if the string looks like a phone number, false if not
+ */
+const isValidPhoneNumber = (number) => {
+  const re = /\d{3}-\d{3}-\d{4}/
+  return re.test(number)
 }
 </script>
 
