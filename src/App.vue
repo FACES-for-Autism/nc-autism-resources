@@ -8,7 +8,7 @@
         <a class="ml-auto sm:hidden font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
       </div>
       
-      <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">Autism Resources Repository</h1>
+      <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">North Carolina Autism Resources</h1>
       <a class="w-min ml-auto hidden sm:block font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
     </div>
   </header>
@@ -35,7 +35,7 @@
     >
       <h4 class="font-semibold">Select county</h4>
       <SelectInput
-        class="flex flex-col w-11/12 xl:w-10/12"
+        class="flex flex-col w-11/12 xl:w-10/12 mt-4 pb-8 border-b border-gray-200"
         :groupName="'county'"
         :values="counties"
         v-model:selectedValue="state.selectedCounty.county"
@@ -48,9 +48,9 @@
         </template>
       </SelectInput>
       <div>
-        <h4 class="mt-8 font-semibold">Filter resources</h4>
+        <h4 class="mt-6 font-semibold">Filter resources</h4>
         <SelectInput
-          class="flex flex-col w-11/12 xl:w-10/12"
+          class="flex flex-col w-11/12 xl:w-10/12 mt-4"
           :groupName="'ages'"
           :values="STATIC_DATA.uniqueAgeGroups"
           v-model:selectedValue="state.fieldFilters.ageGroup"
@@ -68,14 +68,14 @@
           @click="state.fieldFilters.ageGroup = ''">
           Remove age range filter
         </button>
-        <fieldset class="mt-4">
+        <fieldset class="mt-8">
           <legend class="mb-2">Select services:</legend>
           <div
             class=""
           >
             <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
               <input
-                class="mr-2 cursor-pointer"
+                class="mt-2 mr-2 cursor-pointer"
                 type="checkbox"
                 name="services"
                 :id="service"
@@ -97,7 +97,7 @@
     </nav>
     <main class="inline w-full lg:left-1/4 lg:w-3/4">
       <h2 class="pt-4 px-2 font-semibold">About</h2>
-      <p class="mt-4 px-2">Browse autism resources available in North Carolina compiled by the FACES (Fostering Advocacy, Communication, Empowerment, and Support) program. The FACES program is an advocacy and empowerment program for black families raising autistic children based in the NC State University College of Education.</p>
+      <p class="mt-4 px-2">Browse autism resources available in North Carolina compiled by the FACES (Fostering Advocacy, Communication, Empowerment, and Support) program. Visit the <a href="https://sites.google.com/ncsu.edu/facesprogram/home">FACES program website</a> to learn more about FACES.</p>
       <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county and filter resources based on specific criteria.</p>
       <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
       </div>

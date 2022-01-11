@@ -14,6 +14,6 @@ git checkout -b main
 git add -A
 git commit -m 'deploy'
 
-git push -f git@github.com:FACES-for-Autism/resource-repository.git main:gh-pages
+git push -f git@github.com:FACES-for-Autism/nc-autism-resources.git main:gh-pages
 
 cd -
