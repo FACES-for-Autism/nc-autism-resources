@@ -53,6 +53,7 @@ const props = defineProps({
   }
 })
 
+// Computed property that formats email links and returns an HTML string. Allows a listing to handle multiple email address links.
 const emailLinks = computed(() => {
   const emails = props.resource['Email Address'].split(/,\s*/gm)
   const emailLinks = emails.map(email => {
@@ -61,7 +62,7 @@ const emailLinks = computed(() => {
   return emailLinks.join(', ')
 })
 
-// Computed property that formats phone number links and returns an HTML string. Allows the listing to handle multiple phone number listings
+// Computed property that formats phone number links and returns an HTML string. Allows a listing to handle multiple phone number links.
 const phoneNumberLinks = computed(() => {
   const re = /\d{3}-\d{3}-\d{4}/g
   const numbers = props.resource['Phone Number'].match(re)

@@ -30,7 +30,7 @@
     </button>
     <nav
       class="py-6 pl-4 fixed w-8/12 bottom-0 left-0 z-50 border-r border-black sm:w-2/5 md:w-4/12 lg:sticky lg:inline lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white overflow-y-scroll"
-      :style="stickyTopOffset"
+      :style="'top:' + state.stickyTopOffset + 'px'"
       v-show="state.isDesktopDevice || state.navIsVisible"
     >
       <h4 class="font-semibold">Select county</h4>
@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, onBeforeMount, computed, onMounted } from 'vue'
+import { reactive, watch, onBeforeMount, onMounted } from 'vue'
 
 // Import child components
 // import FilterUI from './components/FilterUI.vue'
@@ -180,13 +180,6 @@ const setWidthDependentElements = () => {
   }
 }
 
-// Use computed property to set new "top" style value when "stickyTopOffset" value changes
-const stickyTopOffset = computed(() => {
-    return {
-      top: state.stickyTopOffset + 'px'
-    }
-})
-
 // Clean, reformat, and pass the CSV data into the data stores before the component is mounted
 onBeforeMount(() => {
   // Clean the data
@@ -211,6 +204,7 @@ onBeforeMount(() => {
 onMounted(() => {
   // Set the initial offset for sticky elements (county labels and desktop nav)
   setWidthDependentElements()
+  console.log(STATIC_DATA.fullRepoData.map(d => d['Ages listed']))
 })
 
 // Scroll to the selected county section when county selector is updated
@@ -239,10 +233,10 @@ const removeAllFilters = () => {
 watch(state.fieldFilters, (filters) => {
   // The filter fields
   const {ageGroup, services} = filters
-  // The base filtered data, we will sequentially update this object by passing it through each filter
+  // The base filtered data, sequentially update this object by passing it through each filter
   let filteredData = STATIC_DATA.fullRepoData
 
-  // If filter is set on age group, repo data on selected age range
+  // If filter is set on age group, filter data on selected age range
   if (ageGroup.length > 0) {
     filteredData = filteredData.filter(resource => {
       let [ageCat, ] = ageGroup.split(' (')
@@ -254,7 +248,7 @@ watch(state.fieldFilters, (filters) => {
     })
   }
 
-  // If filter is set on services, repo data on selected services
+  // If filter is set on services, filter data on selected services
   if (services.length > 0) {
     filteredData = filteredData.filter(resource => {
       return services.every(service => resource.services.includes(service))
