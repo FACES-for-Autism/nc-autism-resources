@@ -7,6 +7,7 @@
 export function cleanRawFACESData(rawData) {
   // Empty array to contain the primary unique services (services in dataset with specific header value (i.e., not included under "Other..."))
   let uniqueServices = []
+  console.log(rawData)
 
   // Add an id key and an array of services to each entry in the dataset
   const cleanData = rawData.map((resource, i) => {
@@ -17,16 +18,24 @@ export function cleanRawFACESData(rawData) {
     }
 
     Object.entries(resource).forEach(d => {
-      // Add each column name and row value to the clean resource object
-      cleanResource[d[0]] = d[1]
+      // Add column header and row value to the clean resource object
+      const columnHeader = d[0]
+      const rowValue = d[1] || ''
+      // Don't include service columns in the clean data (these values are passed to the services array being created on the clean data)
+      if (
+        !['yes', 'no'].includes(rowValue.toLowerCase())
+        && columnHeader !== 'Other (List the other services)'
+      ) {
+        cleanResource[columnHeader] = rowValue
+      }
 
       // If the parameter value of the resource is a string and the value is "yes", add the parameter name (i.e., the service name) to the list of services
       if (
-        typeof(d[1]) === 'string' 
-        && d[1].toLowerCase() === 'yes'
+        typeof(rowValue) === 'string' 
+        && rowValue.toLowerCase() === 'yes'
       ) {
         // NOTE: split is to remove " (Yes or No)" text from first service parameter name
-        const serviceName = d[0].split(' (Yes or No)')[0]
+        const serviceName = columnHeader.split(' (Yes or No)')[0]
         cleanResource.services.push(serviceName)
 
         // Build the unique services array

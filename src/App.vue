@@ -204,7 +204,7 @@ onBeforeMount(() => {
 onMounted(() => {
   // Set the initial offset for sticky elements (county labels and desktop nav)
   setWidthDependentElements()
-  console.log(STATIC_DATA.fullRepoData.map(d => d['Ages listed']))
+  console.log(STATIC_DATA.fullRepoData)
 })
 
 // Scroll to the selected county section when county selector is updated
@@ -239,11 +239,14 @@ watch(state.fieldFilters, (filters) => {
   // If filter is set on age group, filter data on selected age range
   if (ageGroup.length > 0) {
     filteredData = filteredData.filter(resource => {
-      let [ageCat, ] = ageGroup.split(' (')
-      // console.log(resource['Age categories'], ageNum)
+      let [ageCat, ageNum] = ageGroup.split(' (')
+      console.log(resource['Ages listed'], ageNum)
       if (resource['Age categories']) {
-        return resource['Age categories'].toLowerCase()
-          .includes(ageCat.toLowerCase())
+        const resourceLower = resource['Age categories'].toLowerCase()
+        if (resourceLower.includes('all')) {
+          return true
+        }
+        return resourceLower.includes(ageCat.toLowerCase())
       }
     })
   }
