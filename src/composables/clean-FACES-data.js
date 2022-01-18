@@ -24,7 +24,6 @@ export function cleanRawFACESData(rawData) {
       // Don't include service columns in the clean data (these values are passed to the services array being created on the clean data)
       if (
         !['yes', 'no'].includes(rowValue.toLowerCase())
-        && columnHeader !== 'Other (List the other services)'
       ) {
         cleanResource[columnHeader] = rowValue
       }
