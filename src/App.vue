@@ -128,6 +128,8 @@
 
 <script setup>
 import { reactive, watch, onBeforeMount, onMounted } from 'vue'
+import axios from 'axios'
+import { parse } from 'csv-parse'
 
 // Import child components
 // import FilterUI from './components/FilterUI.vue'
@@ -182,6 +184,14 @@ const setWidthDependentElements = () => {
 
 // Clean, reformat, and pass the CSV data into the data stores before the component is mounted
 onBeforeMount(() => {
+  axios.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv')
+  .then((response) => {
+    parse(response.data, {
+      columns: true
+    }, (err, d) => {
+      console.log(d)
+    })
+  })
   // Clean the data
   const cleanedRepoData = cleanRawFACESData(rawRepoData)
 
