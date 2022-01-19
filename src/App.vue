@@ -137,7 +137,7 @@ import SelectInput from './components/SelectInput.vue'
 
 
 // Import composables
-import { parseResourcesData } from './composables/parse-and-clean-data'
+import { parseResourcesData } from './composables/parse-and-clean-csv'
 import { cleanRawFACESData } from './composables/clean-FACES-data'
 import { runOnResize } from './composables/handle-resize'
 
