@@ -129,7 +129,6 @@
 <script setup>
 import { reactive, watch, onBeforeMount, onMounted } from 'vue'
 import axios from 'axios'
-import { parse } from 'csv-parse'
 
 // Import child components
 // import FilterUI from './components/FilterUI.vue'
@@ -138,6 +137,7 @@ import SelectInput from './components/SelectInput.vue'
 
 
 // Import composables
+import { parseResourcesData } from './composables/parse-and-clean-data'
 import { cleanRawFACESData } from './composables/clean-FACES-data'
 import { runOnResize } from './composables/handle-resize'
 
@@ -148,8 +148,32 @@ import { counties } from './assets/data/NC-counties.json'
 // Static data
 const STATIC_DATA = {
   fullRepoData: {},
-  uniqueAgeGroups: [],
-  uniqueServices: [],
+  uniqueAgeGroups: [
+    'Infants and Toddlers (0-2 years)',
+    'Preschoolers (3-5 years)',
+    'Children (6-12 years)',
+    'Adolescents (13-17 years)',
+    'Adults (18+ years)'
+  ],
+  uniqueServices: [
+    'ABA Services',
+    'Early Intervention',
+    'Speech Therapy',
+    'Physical Therapy',
+    'Occupational Therapy',
+    'Community Transitions',
+    'Community Living',
+    'Parenting Education',
+    'Advocacy Support',
+    'IEP Support Services',
+    'In-School Services',
+    'Support Groups',
+    'Residential Services',
+    'Medical Provider',
+    'Hospital Treatments',
+    'Mentorship',
+    'Referrals'
+  ],
   countyResourceCount: {}
 }
 
@@ -184,12 +208,19 @@ const setWidthDependentElements = () => {
 
 // Clean, reformat, and pass the CSV data into the data stores before the component is mounted
 onBeforeMount(() => {
-  axios.get('https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv')
-  .then((response) => {
-    parse(response.data, {
-      columns: true
-    }, (err, d) => {
-      console.log(d)
+  // Location of published Google Sheet containing the repository data as a csv file
+  const DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv'
+
+  axios.get(DATA_URL).then((response) => {
+    parseResourcesData(response.data).then((cleanData) => {
+      console.log(counties.map(county => {
+        return {
+          county: county,
+          resources: cleanData.filter(data => 
+            data.CountiesServed.includes(county)
+          )
+        }
+      }))
     })
   })
   // Clean the data
@@ -198,8 +229,8 @@ onBeforeMount(() => {
   STATIC_DATA.fullRepoData = cleanedRepoData.cleanData
   state.filteredRepoData = cleanedRepoData.cleanData
 
-  STATIC_DATA.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
-  STATIC_DATA.uniqueServices = cleanedRepoData.uniqueServices
+  // STATIC_DATA.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
+  // STATIC_DATA.uniqueServices = cleanedRepoData.uniqueServices
   STATIC_DATA.countyResourceCount = cleanedRepoData.totalResourcesByCounty
 
   // Add window resize event listener to run methods when screen size changes
@@ -214,7 +245,6 @@ onBeforeMount(() => {
 onMounted(() => {
   // Set the initial offset for sticky elements (county labels and desktop nav)
   setWidthDependentElements()
-  console.log(STATIC_DATA.fullRepoData)
 })
 
 // Scroll to the selected county section when county selector is updated

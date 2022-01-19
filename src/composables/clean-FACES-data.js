@@ -7,7 +7,6 @@
 export function cleanRawFACESData(rawData) {
   // Empty array to contain the primary unique services (services in dataset with specific header value (i.e., not included under "Other..."))
   let uniqueServices = []
-  console.log(rawData)
 
   // Add an id key and an array of services to each entry in the dataset
   const cleanData = rawData.map((resource, i) => {
