@@ -101,17 +101,15 @@
       <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county and filter resources based on specific criteria.</p>
       <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
       </div>
-      <div class="flex flex-col">
+      <div v-if="!state.loading" class="flex flex-col">
         <div
           v-for="county in counties.sort()"
           :key="county"
           :id="county"
         >
           <CountyResourcesList
-            :countyName="county"
-            :resourceCount="STATIC_DATA.countyResourceCount"
-            :filteredRepoData="state.filteredRepoData"
-            :fullRepoDataLength="STATIC_DATA.fullRepoData.length"
+            :fullCountyResources="filterResourcesByCounty(county)"
+            :filteredIDs="state.filteredIDs"
             :countyHeaderOffset="state.stickyTopOffset"
             @removeAllFilters="removeAllFilters"
           />
@@ -138,16 +136,15 @@ import SelectInput from './components/SelectInput.vue'
 
 // Import composables
 import { parseResourcesData } from './composables/parse-and-clean-csv'
-import { cleanRawFACESData } from './composables/clean-FACES-data'
 import { runOnResize } from './composables/handle-resize'
 
 // Import the FACES repository data (currently a locally stored test CSV file)
-import rawRepoData from './assets/data/MasterListRepository_12-10-21.csv'
 import { counties } from './assets/data/NC-counties.json'
 
 // Static data
 const STATIC_DATA = {
-  fullRepoData: {},
+  fullCountyData: [],
+  uniqueResources: [],
   uniqueAgeGroups: [
     'Infants and Toddlers (0-2 years)',
     'Preschoolers (3-5 years)',
@@ -173,24 +170,27 @@ const STATIC_DATA = {
     'Hospital Treatments',
     'Mentorship',
     'Referrals'
-  ],
-  countyResourceCount: {}
+  ]
 }
 
 // Reactive data
 const state = reactive({
-  // The filtered dataset for display in the application
-  filteredRepoData: {},
   // The field values used to filter the dataset
   fieldFilters: {
     ageGroup: '',
     services: []
   },
+  filteredIDs: [],
   selectedCounty: { county: '' },
   navIsVisible: false,
   stickyTopOffset: 0,
-  isDesktopDevice: false
+  isDesktopDevice: false,
+  loading: true
 })
+
+const filterResourcesByCounty = (county) => {
+  return STATIC_DATA.fullCountyData.filter(d => d.county === county)[0]
+}
 
 // Calculate the offset for sticky elements (county labels and desktop nav)
 const setWidthDependentElements = () => {
@@ -208,31 +208,6 @@ const setWidthDependentElements = () => {
 
 // Clean, reformat, and pass the CSV data into the data stores before the component is mounted
 onBeforeMount(() => {
-  // Location of published Google Sheet containing the repository data as a csv file
-  const DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv'
-
-  axios.get(DATA_URL).then((response) => {
-    parseResourcesData(response.data).then((cleanData) => {
-      console.log(counties.map(county => {
-        return {
-          county: county,
-          resources: cleanData.filter(data => 
-            data.CountiesServed.includes(county)
-          )
-        }
-      }))
-    })
-  })
-  // Clean the data
-  const cleanedRepoData = cleanRawFACESData(rawRepoData)
-
-  STATIC_DATA.fullRepoData = cleanedRepoData.cleanData
-  state.filteredRepoData = cleanedRepoData.cleanData
-
-  // STATIC_DATA.uniqueAgeGroups = cleanedRepoData.uniqueAgeGroups
-  // STATIC_DATA.uniqueServices = cleanedRepoData.uniqueServices
-  STATIC_DATA.countyResourceCount = cleanedRepoData.totalResourcesByCounty
-
   // Add window resize event listener to run methods when screen size changes
   runOnResize(() => {
     setWidthDependentElements()
@@ -243,6 +218,32 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  // Location of published Google Sheet containing the repository data as a csv file
+  const DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv'
+
+  // Fetch the data and pass it to the parser and generate static and dynamic state data
+  axios.get(DATA_URL).then((response) => {
+    parseResourcesData(response.data).then((cleanData) => {
+      // A list of unique resources and their data
+      STATIC_DATA.uniqueResources = cleanData
+
+      // Create object with all resource information grouped by each county
+      STATIC_DATA.fullCountyData = counties.map(county => {
+        return {
+          county: county,
+          resources: cleanData.filter(data => 
+            data.CountiesServed.includes(county)
+          )
+        }
+      })
+
+      state.filteredIDs = cleanData.map(
+        resource => resource.id
+      )
+      state.loading = false
+    })
+  })
+
   // Set the initial offset for sticky elements (county labels and desktop nav)
   setWidthDependentElements()
 })
@@ -271,35 +272,26 @@ const removeAllFilters = () => {
 
 // Watch for changes in filter values (fieldFilters) and update ResourceCards as necessary
 watch(state.fieldFilters, (filters) => {
-  // The filter fields
-  const {ageGroup, services} = filters
-  // The base filtered data, sequentially update this object by passing it through each filter
-  let filteredData = STATIC_DATA.fullRepoData
+  // 
+  let filteredData = STATIC_DATA.uniqueResources
 
   // If filter is set on age group, filter data on selected age range
-  if (ageGroup.length > 0) {
+  if (filters.ageGroup.length > 0) {
     filteredData = filteredData.filter(resource => {
-      let [ageCat, ageNum] = ageGroup.split(' (')
-      console.log(resource['Ages listed'], ageNum)
-      if (resource['Age categories']) {
-        const resourceLower = resource['Age categories'].toLowerCase()
-        if (resourceLower.includes('all')) {
-          return true
-        }
-        return resourceLower.includes(ageCat.toLowerCase())
-      }
+      return resource.AgeGroups.includes(filters.ageGroup)
     })
   }
 
   // If filter is set on services, filter data on selected services
-  if (services.length > 0) {
+  if (filters.services.length > 0) {
     filteredData = filteredData.filter(resource => {
-      return services.every(service => resource.services.includes(service))
+      return filters.services.every(
+        service => resource.Services.includes(service)
+      )
     })
   }
 
-  // Update reactive filtered repo data with final filtered data
-  state.filteredRepoData = filteredData
+  state.filteredIDs = filteredData.map(resource => resource.id)
 })
 </script>
 
