@@ -9,7 +9,7 @@
         class="ml-2 sm:ml-0 font-semibold hover:text-red-400"
         @click="removeAllFilters"
         v-show="dataIsFiltered"
-      >Remove filters</button>
+      >Clear filters</button>
     </div>
   </div>
   <ResourceListing
@@ -20,7 +20,7 @@
   />
   <div v-show="filterByID.length === 0">
     <p class="px-2 my-4">
-      There are no resources in {{ fullCountyResources.county }} county that meet your filter criteria. Remove filters to view the resources in this county.
+      There are no resources in {{ fullCountyResources.county }} county that meet your filter criteria. Clear filters to view the resources in this county.
     </p>
   </div>
 </template>

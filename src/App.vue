@@ -66,7 +66,7 @@
           class="mt-2 italic hover:text-red-400"
           v-if="state.fieldFilters.ageGroup !== ''"
           @click="state.fieldFilters.ageGroup = ''">
-          Remove age range filter
+          Clear age range filter
         </button>
         <fieldset class="mt-8">
           <legend class="mb-2">Select services:</legend>
@@ -91,7 +91,7 @@
           class="mt-2 italic hover:text-red-400"
           v-if="state.fieldFilters.services.length > 0"
           @click="state.fieldFilters.services = []">
-          Remove services filter
+          Clear services filter
         </button>
       </div>
     </nav>
@@ -99,9 +99,10 @@
       <h2 class="pt-4 px-2 font-semibold">About</h2>
       <p class="mt-4 px-2">Browse autism resources available in North Carolina compiled by the FACES (Fostering Advocacy, Communication, Empowerment, and Support) program. Visit the <a href="https://sites.google.com/ncsu.edu/facesprogram/home">FACES program website</a> to learn more about FACES.</p>
       <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county and filter resources based on specific criteria.</p>
-      <div class="flex flex-row flex-wrap items-baseline sticky top-0 z-10 pt-2 bg-white">
+      <div v-if="state.loading" class="flex flex-col items-center justify-center w-full">
+        <PageLoading/>
       </div>
-      <div v-if="!state.loading" class="flex flex-col">
+      <div v-else class="flex flex-col">
         <div
           v-for="county in counties.sort()"
           :key="county"
@@ -132,6 +133,7 @@ import axios from 'axios'
 // import FilterUI from './components/FilterUI.vue'
 import CountyResourcesList from './components/CountyResourcesList.vue'
 import SelectInput from './components/SelectInput.vue'
+import PageLoading from './components/PageLoading.vue'
 
 
 // Import composables
@@ -233,10 +235,18 @@ onMounted(() => {
           county: county,
           resources: cleanData.filter(data => 
             data.CountiesServed.includes(county)
-          )
+          ).sort((a, b) => {
+            if (a.Name < b.Name) {
+              return -1
+            } else if (a.Name > b.Name) {
+              return 1
+            }
+            return 0
+          })
         }
       })
 
+      // Generate list of resource unique IDs for use in filtering
       state.filteredIDs = cleanData.map(
         resource => resource.id
       )
@@ -270,9 +280,9 @@ const removeAllFilters = () => {
   state.fieldFilters.services = []
 }
 
-// Watch for changes in filter values (fieldFilters) and update ResourceCards as necessary
+// Watch for changes in filter values (fieldFilters) and update resource listings as necessary
 watch(state.fieldFilters, (filters) => {
-  // 
+  // The initial, unfiltered data
   let filteredData = STATIC_DATA.uniqueResources
 
   // If filter is set on age group, filter data on selected age range
@@ -291,6 +301,7 @@ watch(state.fieldFilters, (filters) => {
     })
   }
 
+  // Update the filtered IDs to trigger resource listing update
   state.filteredIDs = filteredData.map(resource => resource.id)
 })
 </script>
