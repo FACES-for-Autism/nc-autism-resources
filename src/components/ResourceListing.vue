@@ -77,8 +77,8 @@ const phoneNumberLinks = computed(() => {
     const pos = number.search(re)
     if (pos !== -1) {
       const realNumber = number.slice(pos, pos + 12)
-      const extra = number.slice(pos + 13)
-      return `<a href="tel:+1-${realNumber}">${realNumber}</a> ${extra}`
+      const extra = ' ' + number.slice(pos + 13)
+      return `<a href="tel:+1-${realNumber}">${realNumber}</a>${extra.length > 0 ? extra : ''}`
     }
   })
   return numberLinks.join(', ')
