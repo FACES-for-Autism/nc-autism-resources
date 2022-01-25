@@ -5,17 +5,22 @@
         <a class="" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
           <img class="object-contain" width="75" src="@/assets/faces-logo.png" alt="FACES program logo">
         </a>
-        <a class="ml-auto sm:hidden font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
+        <OpenGuideButton
+          class="ml-auto sm:hidden text-white"
+          @openModal="state.showModal = true"
+        />
       </div>
-      
       <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">North Carolina Autism Resources</h1>
-      <a class="w-min ml-auto hidden sm:block font-semibold text-white hover:text-white" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
+      <OpenGuideButton
+        class="hidden sm:block ml-auto text-white"
+        @openModal="state.showModal = true"
+      />
     </div>
   </header>
   <div class="max-w-6xl mx-auto sm:px-4 md:px-8 xl:p-0 flex flex-row">
     <button 
       aria-label="Open navigation menu"
-      class="fixed z-50 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-800 text-white cursor-pointer"
+      class="fixed z-30 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-800 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
       <svg v-show="!state.navIsVisible" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -29,7 +34,7 @@
       </svg>
     </button>
     <nav
-      class="py-6 pl-4 fixed w-8/12 bottom-0 left-0 z-50 border-r border-black sm:w-2/5 md:w-4/12 lg:sticky lg:inline lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white overflow-y-scroll"
+      class="py-6 pl-4 fixed w-8/12 top-0 bottom-0 left-0 z-50 border-r border-gray-800 sm:w-2/5 md:w-4/12 lg:sticky lg:z-0 lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white overflow-y-scroll"
       :style="'top:' + state.stickyTopOffset + 'px'"
       v-show="state.isDesktopDevice || state.navIsVisible"
     >
@@ -70,9 +75,7 @@
         </button>
         <fieldset class="mt-8">
           <legend class="mb-2">Select services:</legend>
-          <div
-            class=""
-          >
+          <div>
             <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
               <input
                 class="mt-2 mr-2 cursor-pointer"
@@ -118,11 +121,15 @@
       </div>
     </main>
     <div 
-      class="fixed w-screen h-screen left-0 overflow-hidden z-40 bg-gray-500 bg-opacity-60"
+      class="fixed w-screen h-screen left-0 overflow-hidden z-20 bg-gray-500 bg-opacity-60"
       @click="toggleMenuVisibility"
       v-show="!state.isDesktopDevice && state.navIsVisible"
     ></div>
   </div>
+  <GuideModal
+    :class="{'hidden': !state.showModal}"
+    @closeModal="state.showModal = false"
+  />
 </template>
 
 <script setup>
@@ -134,6 +141,8 @@ import axios from 'axios'
 import CountyResourcesList from './components/CountyResourcesList.vue'
 import SelectInput from './components/SelectInput.vue'
 import PageLoading from './components/PageLoading.vue'
+import GuideModal from './components/GuideModal.vue'
+import OpenGuideButton from './components/OpenGuideButton.vue'
 
 
 // Import composables
@@ -187,7 +196,8 @@ const state = reactive({
   navIsVisible: false,
   stickyTopOffset: 0,
   isDesktopDevice: false,
-  loading: true
+  loading: true,
+  showModal: true
 })
 
 const filterResourcesByCounty = (county) => {
