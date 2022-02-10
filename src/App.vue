@@ -101,7 +101,8 @@
     <main class="inline w-full lg:left-1/4 lg:w-3/4">
       <h2 class="pt-4 px-2 font-semibold">About</h2>
       <p class="mt-4 px-2">Browse autism resources available in North Carolina compiled by the FACES (Fostering Advocacy, Communication, Empowerment, and Support) program. Visit the <a href="https://sites.google.com/ncsu.edu/facesprogram/home">FACES program website</a> to learn more about FACES.</p>
-      <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county and filter resources based on specific criteria.</p>
+      <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county.</p>
+      <p class="my-4 px-2">You can also the navigation menu to filter resources based on age ranges served and services offered by a resource.</p>
       <div v-if="state.loading" class="flex flex-col items-center justify-center w-full">
         <PageLoading/>
       </div>

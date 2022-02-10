@@ -1,5 +1,5 @@
 <template>
-<div class="absolute left-0 top-0">
+<div class="absolute left-0 top-0" role="dialog" aria-labelledby="dialog1Title" aria-describedby="dialog1Desc">
   <div 
     class="fixed z-40 left-0 top-0 w-screen h-screen bg-gray-300 bg-opacity-70"
     @click="closeModal"
@@ -15,8 +15,17 @@
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
     </button>
-    <h2>About...</h2>
-    <p>This is what people need to know to use this application</p>
+    <h2 class="font-semibold" id="dialog1Title">Guide</h2>
+    <p class="mt-4" id="dialog1Desc">How to use the North Carolina Autism Resources repository.</p>
+    <h3>Service descriptions</h3>
+    <p class="mt-4">
+      Select the info button <span aria-hidden="true" class="inline">"<svg class="inline h-5 w-5" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <title>Open page guide icon example</title>
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>"</span> in the top-right corner of the screen to access this guide again.
+    </p>
 
     <a class="fixed bottom-4 left-0 right-0 text-center font-semibold text-black" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
   </div>
