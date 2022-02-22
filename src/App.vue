@@ -7,13 +7,13 @@
         </a>
         <OpenGuideButton
           class="ml-auto sm:hidden text-white"
-          @openModal="state.showModal = true"
+          @openModal="toggleModalVisibility"
         />
       </div>
       <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">North Carolina Autism Resources</h1>
       <OpenGuideButton
         class="hidden sm:block ml-auto text-white"
-        @openModal="state.showModal = true"
+        @openModal="toggleModalVisibility"
       />
     </div>
   </header>
@@ -129,7 +129,7 @@
   </div>
   <GuideModal
     :class="{'hidden': !state.showModal}"
-    @closeModal="state.showModal = false"
+    @closeModal="toggleModalVisibility"
   />
 </template>
 
@@ -198,7 +198,7 @@ const state = reactive({
   stickyTopOffset: 0,
   isDesktopDevice: false,
   loading: true,
-  showModal: true
+  showModal: false
 })
 
 const filterResourcesByCounty = (county) => {
@@ -265,6 +265,9 @@ onMounted(() => {
     })
   })
 
+  // Set modal visible when page first loaded
+  toggleModalVisibility()
+
   // Set the initial offset for sticky elements (county labels and desktop nav)
   setWidthDependentElements()
 })
@@ -282,6 +285,20 @@ const toggleMenuVisibility = () => {
     document.querySelector('body').classList.add('overflow-y-hidden')
   } else {
     document.querySelector('body').classList.remove('overflow-y-hidden')
+  }
+}
+
+// Show/hide modal and prevent scrolling in main section of page
+const toggleModalVisibility = () => {
+  state.showModal = !state.showModal
+  if (state.showModal) {
+    document.body.style.top = `-${window.pageYOffset}px`
+    document.body.style.position = 'fixed'
+  } else {
+    const scrollY = document.body.style.top
+    document.body.style.top = ``
+    document.body.style.position = ''
+    window.scrollTo(0, parseInt(scrollY || '0') * -1)
   }
 }
 
