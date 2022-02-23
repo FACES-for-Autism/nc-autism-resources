@@ -1,5 +1,5 @@
 <template>
-<div class="absolute left-0 top-0" role="dialog" aria-labelledby="dialog1Title" aria-describedby="dialog1Desc">
+<div class="absolute left-0 top-0" role="dialog" aria-labelledby="dialogTitle" aria-describedby="dialogDesc">
   <div 
     class="fixed z-40 left-0 top-0 w-screen h-screen bg-gray-300 bg-opacity-70"
     @click="closeModal"
@@ -15,8 +15,8 @@
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
     </button>
-    <h2 class="font-semibold" id="dialog1Title">Guide</h2>
-    <p class="mt-4" id="dialog1Desc">How to use the North Carolina Autism Resources repository.</p>
+    <h2 class="font-semibold" id="dialogTitle">Resource Guide</h2>
+    <p class="mt-4" id="dialogDesc">How to use the North Carolina Autism Resources repository.</p>
     <h3>Service descriptions</h3>
     <p class="mt-4">
       Select the info button <span aria-hidden="true" class="inline">(<svg class="inline h-5 w-5" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

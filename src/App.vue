@@ -102,7 +102,14 @@
       <h2 class="pt-4 px-2 font-semibold">About</h2>
       <p class="mt-4 px-2">Browse autism resources available in North Carolina compiled by the FACES (Fostering Advocacy, Communication, Empowerment, and Support) program. Visit the <a href="https://sites.google.com/ncsu.edu/facesprogram/home">FACES program website</a> to learn more about FACES.</p>
       <p class="my-4 px-2">Resources are organized alphabetically by county. Use the navigation menu to access resources for a particular county.</p>
-      <p class="my-4 px-2">You can also the navigation menu to filter resources based on age ranges served and services offered by a resource.</p>
+      <p class="my-4 px-2">You can also use the navigation menu to filter resources based on age ranges served and services offered by a resource.</p>
+      <p class="my-4 px-2">Select the info button <span aria-hidden="true" class="inline">( <svg class="inline h-5 w-5" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <title>Open page guide icon example</title>
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg> )</span> in the top-right corner of the screen to access the resource guide.
+      </p>
       <div v-if="state.loading" class="flex flex-col items-center justify-center w-full">
         <PageLoading/>
       </div>
@@ -219,7 +226,6 @@ const setWidthDependentElements = () => {
   }
 }
 
-// Clean, reformat, and pass the CSV data into the data stores before the component is mounted
 onBeforeMount(() => {
   // Add window resize event listener to run methods when screen size changes
   runOnResize(() => {
@@ -232,11 +238,11 @@ onBeforeMount(() => {
 
 onMounted(() => {
   // Location of published Google Sheet containing the repository data as a csv file
-  const DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv'
+  const data_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQjyogOZCRZpfXJQ--wYWuhFpe-GIZRJsg7DZjWsiCycgDKtV7t21Pb8GlIZeMnWxl3hFQYZtuXE4i/pub?gid=29192816&single=true&output=csv'
 
   // Fetch the data and pass it to the parser and generate static and dynamic state data
-  axios.get(DATA_URL).then((response) => {
-    parseResourcesData(response.data).then((cleanData) => {
+  axios.get(data_url).then((response) => {
+    parseResourcesData(response.data).then(cleanData => {
       // A list of unique resources and their data
       STATIC_DATA.uniqueResources = cleanData
 
@@ -265,17 +271,8 @@ onMounted(() => {
     })
   })
 
-  // Set modal visible when page first loaded
-  toggleModalVisibility()
-
   // Set the initial offset for sticky elements (county labels and desktop nav)
   setWidthDependentElements()
-})
-
-// Scroll to the selected county section when county selector is updated
-watch(state.selectedCounty, (county) => {
-  const scrollToElement = document.getElementById(county.county)
-  window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
 })
 
 // Toggle showing the filter menu
@@ -301,6 +298,12 @@ const toggleModalVisibility = () => {
     window.scrollTo(0, parseInt(scrollY || '0') * -1)
   }
 }
+
+// Scroll to the selected county section when county selector is updated
+watch(state.selectedCounty, (county) => {
+  const scrollToElement = document.getElementById(county.county)
+  window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
+})
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
 const removeAllFilters = () => {
