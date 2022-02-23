@@ -36,7 +36,12 @@
       <span v-else>Not listed</span>
     </address>
     <h4 class="font-semibold mt-4">Ages Served</h4>
-    <p v-if="arrayIsDefined(resource.AgeGroups)">{{ resource.AgeGroups.join(', ') }}</p>
+    <ul v-if="arrayIsDefined(resource.AgeGroups)" class="md:pr-36 list-inside list-disc">
+      <li
+        v-for="ageGroup in resource.AgeGroups"
+        :key=ageGroup
+      >{{ ageGroup }}</li>
+    </ul>
     <p v-else>Not listed</p>
     <h4 class="font-semibold mt-4">Services</h4>
     <ul v-if="arrayIsDefined(resource.Services)" class="grid sm:grid-cols-2 md:pr-36 content-start list-inside list-disc">
