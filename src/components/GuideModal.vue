@@ -4,7 +4,7 @@
     class="fixed z-40 left-0 top-0 w-screen h-screen bg-gray-300 bg-opacity-70"
     @click="closeModal"
   ></div>
-  <div class="modal z-50 fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 sm:w-10/12 lg:w-8/12 max-w-2xl p-4 border border-gray-800 bg-white">
+  <div class="modal z-50 fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 sm:w-10/12 lg:w-8/12 max-w-2xl p-4 border border-gray-800 bg-white dark:bg-gray-800">
     <button
       class="absolute right-4 top-4"
       aria-label="Close guide"

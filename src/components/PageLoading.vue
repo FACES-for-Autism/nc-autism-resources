@@ -1,10 +1,10 @@
 <template>
-  <div class="waterfall my-10">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+  <div class="waterfall my-14">
+    <div class="bg-gray-800 dark:bg-gray-100"></div>
+    <div class="bg-gray-800 dark:bg-gray-100"></div>
+    <div class="bg-gray-800 dark:bg-gray-100"></div>
+    <div class="bg-gray-800 dark:bg-gray-100"></div>
+    <div class="bg-gray-800 dark:bg-gray-100"></div>
   </div>
   <h2>Loading Resources</h2>
 </template>
@@ -47,7 +47,7 @@
 .waterfall div {
   -webkit-animation: waterfall 1.5s infinite;
           animation: waterfall 1.5s infinite;
-  background-color: #333333;
+  /* background-color: #333333; */
   height: 20px;
   left: 50%;
   margin-top: -10px;

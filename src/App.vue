@@ -1,8 +1,8 @@
 <template>
-  <header class="sticky top-0 z-20 w-screen border-b border-black bg-gray-800">
+  <header class="sticky top-0 z-20 w-screen border-b border-black bg-gray-800 dark:bg-gray-900">
     <div class="max-w-6xl mx-auto px-2 pt-2 sm:pt-0 sm:px-4 md:px-8 xl:p-0 flex flex-row flex-wrap items-center">
       <div class="flex flex-row items-center w-full sm:w-max">
-        <a class="" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
+        <a class="pl-1" href="https://sites.google.com/ncsu.edu/facesprogram/home" aria-label="FACES program homepage">
           <img class="object-contain" width="75" src="@/assets/faces-logo.png" alt="FACES program logo">
         </a>
         <OpenGuideButton
@@ -20,7 +20,7 @@
   <div class="max-w-6xl mx-auto sm:px-4 md:px-8 xl:p-0 flex flex-row">
     <button 
       aria-label="Open navigation menu"
-      class="fixed z-30 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-800 text-white cursor-pointer"
+      class="fixed z-30 right-4 bottom-4 p-3 lg:hidden rounded-full bg-gray-800 dark:bg-gray-900 text-white cursor-pointer"
       @click="toggleMenuVisibility"
     >
       <svg v-show="!state.navIsVisible" aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -34,7 +34,7 @@
       </svg>
     </button>
     <nav
-      class="py-6 pl-4 fixed w-8/12 top-0 bottom-0 left-0 z-50 border-r border-gray-800 sm:w-2/5 md:w-4/12 lg:sticky lg:z-0 lg:w-1/4 lg:h-screen lg:pl-0 lg:border-none bg-white overflow-y-scroll"
+      class="py-6 pl-4 fixed w-8/12 top-0 bottom-0 left-0 z-50 border-r border-gray-800 sm:w-2/5 md:w-4/12 lg:sticky lg:z-0 lg:w-1/4 lg:h-screen lg:pl-1 lg:border-none bg-white dark:bg-gray-800 overflow-y-scroll"
       :style="'top:' + state.stickyTopOffset + 'px'"
       v-show="state.isDesktopDevice || state.navIsVisible"
     >
@@ -252,6 +252,7 @@ onMounted(() => {
           county: county,
           resources: cleanData.filter(data => 
             data.CountiesServed.includes(county)
+            || data.CountiesServed[0].toLowerCase() == "all counties"
           ).sort((a, b) => {
             if (a.Name < b.Name) {
               return -1
@@ -343,4 +344,11 @@ watch(state.fieldFilters, (filters) => {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: rgb(51, 51, 51);
+      color: #e5e5e5;
+    }
+  }
 </style>
