@@ -34,8 +34,8 @@
       </svg>
     </button>
     <nav
-      class="py-6 pl-4 absolute w-8/12 top-0 bottom-0 left-0 z-50 border-r border-gray-800 sm:w-2/5 md:w-4/12 lg:sticky lg:z-0 lg:w-1/4 lg:h-screen lg:pl-1 lg:border-none bg-white dark:bg-gray-800 overflow-y-scroll"
-      :style="'top:' + state.isDesktopDevice ? state.stickyTopOffset : 0 + 'px'"
+      class="py-6 pl-4 fixed w-8/12 top-0 bottom-0 left-0 z-50 border-r border-gray-800 sm:w-2/5 md:w-4/12 lg:sticky lg:z-0 lg:w-1/4 lg:h-screen lg:pl-1 lg:border-none bg-white dark:bg-gray-800 overflow-y-scroll"
+      :style="`top: ${state.isDesktopDevice ? state.stickyTopOffset : 0}px`"
       v-show="state.isDesktopDevice || state.navIsVisible"
     >
       <h4 class="font-semibold">Select county</h4>
@@ -78,7 +78,7 @@
           <div>
             <div v-for="service in STATIC_DATA.uniqueServices" :key="service">
               <input
-                class="mt-2 mr-2 cursor-pointer"
+                class="services-checkbox mt-2 mr-2 cursor-pointer dark:bg-gray-900"
                 type="checkbox"
                 name="services"
                 :id="service"
@@ -345,10 +345,10 @@ watch(state.fieldFilters, (filters) => {
   -moz-osx-font-smoothing: grayscale;
 }
 
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: rgb(51, 51, 51);
-      color: #e5e5e5;
-    }
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: rgb(51, 51, 51);
+    color: #e5e5e5;
   }
+}
 </style>
