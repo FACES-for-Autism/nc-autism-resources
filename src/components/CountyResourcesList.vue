@@ -1,5 +1,5 @@
 <template>
-  <div class="sticky top-0 w-full px-2 text-gray-900 bg-gray-100 border-b border-gray-200 flex flex-wrap justify-between items-baseline sm:items-center" :style="{top: props.countyHeaderOffset + 'px'}">
+  <div class="sticky top-0 w-full px-2 text-gray-900 bg-gray-100 dark:bg-gray-300 border-b border-gray-200 flex flex-wrap justify-between items-baseline sm:items-center" :style="{top: props.countyHeaderOffset + 'px'}">
     <h2 class="mr-2 sm:mr-0 font-semibold">
       {{ fullCountyResources.county }} County
     </h2>

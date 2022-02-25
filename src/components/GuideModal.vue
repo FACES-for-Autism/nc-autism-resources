@@ -5,6 +5,9 @@
     @click="closeModal"
   ></div>
   <div class="modal z-50 fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 sm:w-10/12 lg:w-8/12 max-w-2xl p-4 border border-gray-800 bg-white dark:bg-gray-800">
+    <h2 class="font-semibold" id="dialogTitle" tabindex="-1">Resource Guide</h2>
+    <p class="mt-4" id="dialogDesc">How to use the North Carolina Autism Resources repository.</p>
+    <h3>Service descriptions</h3>
     <button
       class="absolute right-4 top-4"
       aria-label="Close guide"
@@ -15,9 +18,6 @@
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
     </button>
-    <h2 class="font-semibold" id="dialogTitle">Resource Guide</h2>
-    <p class="mt-4" id="dialogDesc">How to use the North Carolina Autism Resources repository.</p>
-    <h3>Service descriptions</h3>
     <a class="fixed bottom-4 left-0 right-0 text-center font-semibold" href="https://sites.google.com/ncsu.edu/facesprogram/contact-us">Contact FACES</a>
   </div>
 </div>
