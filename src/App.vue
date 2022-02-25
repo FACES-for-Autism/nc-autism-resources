@@ -310,11 +310,15 @@ const toggleModalVisibility = () => {
 
 // Scroll to the selected county section when county selector is updated
 watch(state.selectedCounty, (county) => {
-  document.body.style.position = ''
+  if (state.navIsVisible && !state.isDesktopDevice) {
+    document.body.style.position = ''
+  }
   const scrollToElement = document.getElementById(county.county)
   window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
-  document.body.style.top = `-${window.pageYOffset}px`
-  document.body.style.position = 'fixed'
+  if (state.navIsVisible && !state.isDesktopDevice) {
+    document.body.style.top = `-${window.pageYOffset}px`
+    document.body.style.position = 'fixed'
+  }
 })
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
