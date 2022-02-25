@@ -68,7 +68,7 @@
           </template>
         </SelectInput>
         <button
-          class="mt-2 italic hover:text-red-400"
+          class="mt-2 font-semibold hover:text-red-400 dark:hover:text-yellow-400"
           v-if="state.fieldFilters.ageGroup !== ''"
           @click="state.fieldFilters.ageGroup = ''">
           Clear age range filter
@@ -91,7 +91,7 @@
           </div>
         </fieldset>
         <button
-          class="mt-2 italic hover:text-red-400"
+          class="mt-2 font-semibold hover:text-red-400 dark:hover:text-yellow-400"
           v-if="state.fieldFilters.services.length > 0"
           @click="state.fieldFilters.services = []">
           Clear services filter
@@ -141,7 +141,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, onBeforeMount, onMounted } from 'vue'
+import { reactive, watch, onBeforeMount, onMounted, nextTick } from 'vue'
 import axios from 'axios'
 
 // Import child components
@@ -280,16 +280,6 @@ onMounted(() => {
 const toggleMenuVisibility = () => {
   state.navIsVisible = !state.navIsVisible
   if (state.navIsVisible && !state.isDesktopDevice) {
-    document.querySelector('body').classList.add('overflow-y-hidden')
-  } else {
-    document.querySelector('body').classList.remove('overflow-y-hidden')
-  }
-}
-
-// Show/hide modal and prevent scrolling in main section of page
-const toggleModalVisibility = () => {
-  state.showModal = !state.showModal
-  if (state.showModal) {
     document.body.style.top = `-${window.pageYOffset}px`
     document.body.style.position = 'fixed'
   } else {
@@ -300,10 +290,31 @@ const toggleModalVisibility = () => {
   }
 }
 
+// Show/hide modal and prevent scrolling in main section of page
+const toggleModalVisibility = () => {
+  state.showModal = !state.showModal
+  if (state.showModal) {
+    document.body.style.top = `-${window.pageYOffset}px`
+    document.body.style.position = 'fixed'
+    // Set focus on modal header after modal is rendered in DOM
+    nextTick(() => {
+      document.getElementById('dialogTitle').focus()
+    })
+  } else {
+    const scrollY = document.body.style.top
+    document.body.style.top = ``
+    document.body.style.position = ''
+    window.scrollTo(0, parseInt(scrollY || '0') * -1)
+  }
+}
+
 // Scroll to the selected county section when county selector is updated
 watch(state.selectedCounty, (county) => {
+  document.body.style.position = ''
   const scrollToElement = document.getElementById(county.county)
   window.scrollTo(0, scrollToElement.getBoundingClientRect().top + window.pageYOffset - state.stickyTopOffset)
+  document.body.style.top = `-${window.pageYOffset}px`
+  document.body.style.position = 'fixed'
 })
 
 // Set the filter values to empty string (ageGroup) or empty array (services)
