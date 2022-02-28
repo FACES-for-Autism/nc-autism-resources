@@ -10,7 +10,7 @@
           @openModal="toggleModalVisibility"
         />
       </div>
-      <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">North Carolina Autism Resources</h1>
+      <h1 class="font-semibold sm:font-normal sm:ml-4 text-white">{{ state.pageTitle }}</h1>
       <OpenGuideButton
         class="hidden sm:block ml-auto text-white"
         @openModal="toggleModalVisibility"
@@ -203,6 +203,7 @@ const state = reactive({
   selectedCounty: { county: '' },
   navIsVisible: false,
   stickyTopOffset: 0,
+  pageTitle: 'North Carolina Autism Resources',
   isDesktopDevice: false,
   loading: true,
   showModal: false
@@ -217,6 +218,12 @@ const setWidthDependentElements = () => {
   // Calculate the offset for sticky elements (county labels and desktop nav)
   const headerElement = document.querySelector('header')
   state.stickyTopOffset = headerElement.getBoundingClientRect().height
+
+  if (window.innerWidth < 388) {
+    state.pageTitle = 'NC Autism Resources'
+  } else {
+    state.pageTitle = 'North Carolina Autism Resources'
+  }
 
   // Prevent nav menu from being hidden on desktop devices
   if (window.innerWidth >= 1024) {

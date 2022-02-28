@@ -5,7 +5,7 @@
     @click="closeModal"
   ></div>
   <div class="modal z-50 fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 sm:w-10/12 lg:w-8/12 max-w-2xl p-4 border border-gray-800 bg-white dark:bg-gray-800">
-    <h2 class="font-semibold" id="dialogTitle" tabindex="-1">Resource Guide</h2>
+    <h2 class="font-semibold focus:outline-none" id="dialogTitle" tabindex="-1">Resource Guide</h2>
     <p class="mt-4" id="dialogDesc">How to use the North Carolina Autism Resources repository.</p>
     <h3>Service descriptions</h3>
     <button
