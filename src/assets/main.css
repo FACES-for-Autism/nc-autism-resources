@@ -17,7 +17,7 @@
     @apply text-base mt-2 mb-1;
   }
   a {
-    @apply text-red-200 no-underline cursor-pointer hover:text-red-400 hover:underline;
+    @apply text-red-200 dark:text-yellow-400 no-underline cursor-pointer hover:text-red-400 dark:hover:text-yellow-200 hover:underline;
   }
 
   @screen md {

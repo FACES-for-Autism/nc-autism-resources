@@ -3,7 +3,7 @@ module.exports = {
     './src/**/*.vue',
     './src/**/*.js',
   ],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
     colors: {
       transparent: 'transparent',
@@ -38,6 +38,15 @@ module.exports = {
         500: '#990000',
         600: '#5e0000',
         700: '#3e0000'
+      },
+      yellow: {
+        100: '#fef8cb',
+        200: '#fde565',
+        300: '#f8da3e',
+        500: '#d7a700',
+        400: '#fac800',
+        600: '#b88800',
+        700: '#966d00'
       }
     },
   },

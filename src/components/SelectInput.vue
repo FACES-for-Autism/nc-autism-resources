@@ -4,7 +4,7 @@
       <slot name="label"></slot>
     </label>
     <select
-      class="w-full p-1 cursor-pointer border border-black rounded-sm"
+      class="w-full p-1 cursor-pointer border border-black dark:bg-gray-900 rounded-sm"
       @change="selectChange"
       v-model="currentValue"
       :name="groupName"
