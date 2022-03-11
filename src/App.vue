@@ -283,13 +283,35 @@ onMounted(() => {
   setWidthDependentElements()
 })
 
+/**
+ * Listen for an Escape key press to close the menu or modal
+ * 
+ * @param {KeyboardEvent} e The key pressed
+ */
+function closeOverlayOnEsc(e) {
+  if (e.code === 'Escape') {
+    if (state.navIsVisible) {
+      toggleMenuVisibility()
+    } else if (state.showModal) {
+      toggleModalVisibility()
+    }
+    // Remove event listener to close overlay on Escape press
+    document.removeEventListener('keydown', closeOverlayOnEsc)
+  }
+}
+
 // Toggle showing the filter menu
 const toggleMenuVisibility = () => {
   state.navIsVisible = !state.navIsVisible
   if (state.navIsVisible && !state.isDesktopDevice) {
+    // Maintain position of content behind menu
     document.body.style.top = `-${window.pageYOffset}px`
     document.body.style.position = 'fixed'
+
+    // Add event listener to close menu on Escape press
+    document.addEventListener('keydown', closeOverlayOnEsc)
   } else {
+    // Resume scroll capabilities on body
     const scrollY = document.body.style.top
     document.body.style.top = ``
     document.body.style.position = ''
@@ -307,6 +329,9 @@ const toggleModalVisibility = () => {
     nextTick(() => {
       document.getElementById('dialogTitle').focus()
     })
+
+    // Add event listener to close modal on Escape press
+    document.addEventListener('keydown', closeOverlayOnEsc)
   } else {
     const scrollY = document.body.style.top
     document.body.style.top = ``

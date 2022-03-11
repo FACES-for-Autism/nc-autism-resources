@@ -24,6 +24,7 @@
 </template>
 
 <script setup>
+// import { ref, onUpdated } from 'vue'
 // eslint-disable-next-line no-undef
 const emit = defineEmits(['closeModal'])
 
